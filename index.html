@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>廃線かさね地図 v0.4</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='f' x1='0' y1='1' x2='0' y2='0'%3E%3Cstop offset='.25' stop-color='%23fff'/%3E%3Cstop offset='1' stop-color='%23fff' stop-opacity='.12'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%23c8322b'/%3E%3Cg stroke-linecap='round' fill='none'%3E%3Cpath d='M10 53h44' stroke='%23fff' stroke-width='5.5'/%3E%3Cpath d='M15 40h34' stroke='%23fff' stroke-opacity='.85' stroke-width='4.5'/%3E%3Cpath d='M20 29h24' stroke='%23fff' stroke-opacity='.6' stroke-width='3.6'/%3E%3Cpath d='M24 20h16' stroke='%23fff' stroke-opacity='.38' stroke-width='2.8'/%3E%3Cpath d='M27 13h10' stroke='%23fff' stroke-opacity='.2' stroke-width='2.2'/%3E%3Cpath d='M18 60L29 8M46 60L35 8' stroke='url(%23f)' stroke-width='5'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<meta name="theme-color" content="#c8322b">
+<title>廃線かさね地図 v0.7</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -71,6 +74,14 @@ body.mode-view .makeOnly,body.mode-make .viewOnly{display:none}
 #lpop .r{display:flex;align-items:center;gap:6px;margin:5px 0}
 #lpop .r b{width:52px;font-weight:normal;color:var(--sub)}
 #lpop button{padding:2px 8px}
+#ppop{position:absolute;z-index:700;background:#fff;border:1px solid #c9c2b4;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.2);padding:8px 10px;font-size:12px;display:none;width:210px}
+#ppop .hd{display:flex;align-items:center;font-weight:bold;margin-bottom:4px}
+#ppop .hd span{flex:1}
+#ppop .r{display:flex;align-items:center;gap:6px;margin:5px 0}
+#ppop button{padding:2px 8px}
+main.dr .leaflet-container,main.dr .leaflet-grab{cursor:crosshair}
+#drawList .item.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.drEdit{background:#fff;border:1px solid var(--acc);border-radius:6px;padding:6px 8px;margin:6px 0}
 .snap{display:flex;align-items:center;gap:4px;padding:5px 6px;border-radius:5px;background:#fff;border:1px solid #ebe5d9;margin-bottom:4px}
 .snap .nm{flex:1;min-width:0;cursor:pointer}
 .snap .nm b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -101,7 +112,7 @@ main.ph .leaflet-container,main.ph .leaflet-grab{cursor:pointer}
 <div id="app">
 <aside id="side">
   <header>
-    <h1>廃線かさね地図 <small>v0.4</small></h1>
+    <h1>廃線かさね地図 <small>v0.7</small></h1>
     <div id="status">データ読み込み中…</div>
     <div class="modeSw"><button data-mode="view">見るモード</button><button data-mode="make">作るモード</button></div>
   </header>
@@ -136,6 +147,8 @@ main.ph .leaflet-container,main.ph .leaflet-grab{cursor:pointer}
       <label class="row"><input type="checkbox" id="vCur">現役の路線もうすく出す</label>
       <label class="row"><input type="checkbox" id="vOld">旧線（付け替え前の線）も出す</label>
       <label class="row"><input type="checkbox" id="vDecade">廃止の年代で色分け</label>
+      <label class="row"><input type="checkbox" id="vKm">えらんだ路線の駅間の距離を出す</label>
+      <div class="row2" style="margin-left:22px"><select data-cfg="kmMode"><option value="seg">駅間の距離</option><option value="cum">起点からの累計</option><option value="both">両方</option></select></div>
       <div id="vLegend"></div>
     </div>
   </details>
@@ -147,6 +160,22 @@ main.ph .leaflet-container,main.ph .leaflet-grab{cursor:pointer}
       <div class="row2">
         <button id="zoomSel">えらんだ路線に移動</button>
         <button id="clearSel">全部はずす</button>
+      </div>
+    </div>
+  </details>
+
+  <details class="makeOnly" id="dDraw" open>
+    <summary>自分で描く（予定線・未成線など）</summary>
+    <div class="box">
+      <div id="drawList"></div>
+      <div class="row2"><button class="pri" id="drNew">＋ 新しい線を描く</button></div>
+      <div id="drawEdit"></div>
+      <div class="row2"><button id="drGeoOut">GeoJSONで書き出す</button><button id="drGeoIn">GeoJSONを読む</button><input type="file" id="drGeoFile" accept=".geojson,.json" style="display:none"></div>
+      <div class="hint">
+        ・「点を置く」中は、地図をクリックするたびに点が増える。ダブルクリックかEnterでおわり。<br>
+        ・点をクリックすると「カーブの目安／駅／角」を切り替え。駅なら名前を入れる。<br>
+        ・点はドラッグで動かせる。線の上をクリックすると途中に点が入る。右クリックかDeleteで点を消す。<br>
+        ・近くの駅や線の端に吸いつく（緑の丸）。Altを押しながらだと吸いつかない。
       </div>
     </div>
   </details>
@@ -182,6 +211,10 @@ main.ph .leaflet-container,main.ph .leaflet-grab{cursor:pointer}
       <div class="row2">駅名に年を添える
         <select data-cfg="stYear"><option value="none">なし</option><option value="closed">廃駅だけ</option><option value="all">すべて</option></select>
       </div>
+      <hr style="border:none;border-top:1px solid var(--line)">
+      <label class="row"><input type="checkbox" data-cfg="kmShow">駅間の距離を表示（地図上の概算）</label>
+      <div class="row2">出しかた <select data-cfg="kmMode"><option value="seg">駅間の距離</option><option value="cum">起点からの累計</option><option value="both">両方</option></select> 大きさ <input type="number" data-cfg="kmSize" min="7" max="30"></div>
+      <div class="hint">起点を逆にしたいときは「えらんだ路線」の ⇄ を押す。描いた線は線の向き（始点）が起点。</div>
       <hr style="border:none;border-top:1px solid var(--line)">
       <label class="row"><input type="checkbox" data-cfg="lnLabel">路線名の注記</label>
       <label class="row"><input type="checkbox" data-cfg="lnYear">注記に「○年廃止」を添える</label>
@@ -237,6 +270,13 @@ main.ph .leaflet-container,main.ph .leaflet-grab{cursor:pointer}
   <canvas id="ov"></canvas>
   <div id="frame"></div>
   <div id="tip"></div>
+  <div id="ppop">
+    <div class="hd"><span>点の設定</span><button class="x" id="ppClose">×</button></div>
+    <div class="r"><label><input type="radio" name="ppk" value="shape"> カーブの目安</label></div>
+    <div class="r"><label><input type="radio" name="ppk" value="station"> 駅</label><input type="text" id="ppName" placeholder="駅名" style="flex:1;min-width:0"></div>
+    <div class="r"><label><input type="radio" name="ppk" value="corner"> 角（ここで折れる）</label></div>
+    <div class="r"><button id="ppDel">この点を消す</button></div>
+  </div>
   <div id="lpop">
     <div class="hd"><span id="lpName"></span><button class="x" id="lpClose">×</button></div>
     <div class="r"><b>大きさ</b><button id="lpMinus">−</button><span id="lpSize" style="width:28px;text-align:center"></span><button id="lpPlus">＋</button></div>
@@ -258,7 +298,9 @@ main.ph .leaflet-container,main.ph .leaflet-grab{cursor:pointer}
   </div>
   <div class="row2"><button class="pri" id="saveJson" disabled>rail_n05.json を保存</button></div>
   <div class="hint">
-    手順：①国土数値情報のサイトで「鉄道時系列」のzipをダウンロード → ②解凍せずにここへドロップして「変換する」→ ③「rail_n05.json を保存」→ ④そのファイルを index.html と同じフォルダ（GitHub）に置く。<br>以後はページを開くだけで自動で読み込むので、ここを開く必要はない。データを新しい年度に入れ替えるときだけ使う。
+    手順：①国土数値情報のサイトで「鉄道時系列」のzipをダウンロード → ②解凍せずにここへドロップして「変換する」→ これでこのブラウザが覚えるので、次からはページを開くだけで使える。<br>
+    「rail_n05.json を保存」は手元に残す控え（別のブラウザやパソコンで使うときは、それをここにドロップ）。<br>
+    <b>注意：</b>鉄道時系列データは「非商用」で、複製物の再配布はできない。rail_n05.json を公開のGitHubなどに置かないこと。
   </div>
 </div></div>
 
@@ -739,6 +781,7 @@ const DEF = {
   fontLabel: 'sys', fontTitle: 'sys', bold: true,
   stCur: true, stClosed: true, stLabel: true, stSize: 14, stR: 4.5, stYear: 'closed',
   lnLabel: true, lnYear: true, lnSize: 18,
+  kmShow: false, kmMode: 'seg', kmSize: 11,
   aspect: '16:9', outW: 1600, title: '', titleSize: 26, legend: false,
   attrAuto: true, attrText: '', attrPos: 'br', attrSize: 12
 };
@@ -751,10 +794,10 @@ function merge(d, o) {
   return r;
 }
 let cfg = clone(DEF);
-const S = { groups: [], pieces: [], stations: [], sel: [], offsets: {}, lstyle: {}, loaded: false, pendingSel: null, json: null };
+const S = { groups: [], pieces: [], stations: [], sel: [], offsets: {}, lstyle: {}, drawn: [], loaded: false, pendingSel: null, json: null };
 let mode = 'make';
 try { mode = localStorage.getItem('haisen-kasane-mode') === 'view' ? 'view' : 'make'; } catch (e) {}
-const VW = { year: 2025, yearOn: false, cur: true, old: false, decade: true, sel: null, maxY: 2025 };
+const VW = { year: 2025, yearOn: false, cur: true, old: false, decade: true, km: false, sel: null, maxY: 2025 };
 try { Object.assign(VW, JSON.parse(localStorage.getItem('haisen-kasane-view') || '{}'), { sel: null }); } catch (e) {}
 function saveVW() { try { const { sel, ...o } = VW; localStorage.setItem('haisen-kasane-view', JSON.stringify(o)); } catch (e) {} }
 
@@ -765,8 +808,8 @@ function save() {
   saveT = setTimeout(() => {
     try {
       localStorage.setItem(LSKEY, JSON.stringify({
-        cfg, offsets: S.offsets, lstyle: S.lstyle,
-        sel: S.loaded ? S.sel.map(s => ({ key: gkey(S.groups[s.gi]), show: s.show, color: s.color })) : (S.pendingSel || [])
+        cfg, offsets: S.offsets, lstyle: S.lstyle, drawn: S.drawn,
+        sel: S.loaded ? S.sel.map(s => ({ key: gkey(S.groups[s.gi]), show: s.show, color: s.color, flip: !!s.flip })) : (S.pendingSel || [])
       }));
     } catch (e) {}
   }, 300);
@@ -774,7 +817,7 @@ function save() {
 function loadSaved() {
   try {
     const o = JSON.parse(localStorage.getItem(LSKEY) || 'null');
-    if (o) { cfg = merge(DEF, o.cfg); S.offsets = o.offsets || {}; S.lstyle = o.lstyle || {}; S.pendingSel = o.sel || []; }
+    if (o) { cfg = merge(DEF, o.cfg); S.offsets = o.offsets || {}; S.lstyle = o.lstyle || {}; S.drawn = Array.isArray(o.drawn) ? o.drawn : []; S.pendingSel = o.sel || []; }
   } catch (e) {}
 }
 const gkey = g => g.n + '|' + g.c;
@@ -983,7 +1026,7 @@ function drawScene(ctx, V, o) {
     }
     ctx.setLineDash([]);
   }
-  if (!sel.size) return decorate(ctx, V, o, sel);
+  if (!sel.size) { drawDrawn(ctx, V, o); drawKm(ctx, V, o, sel); drawHandles(ctx, V, o); return decorate(ctx, V, o, sel); }
 
   const vis = p => sel.has(p.g) && (p.k !== 1 || cfg.showOld) && inView(p, c, 0);
   const order = [1, 0, 2];
@@ -1008,6 +1051,7 @@ function drawScene(ctx, V, o) {
     for (const [col, lines] of groupsBy[kk]) strokeStyled(ctx, lines, sty, col, k);
   }
   ctx.setLineDash([]);
+  drawDrawn(ctx, V, o);
 
   // 駅
   const stVis = [];
@@ -1055,6 +1099,8 @@ function drawScene(ctx, V, o) {
       if (o.screen) labelBoxes.push({ key, ...b, def, name: g.n + '（注記）', defSize: cfg.lnSize, defColor: dcol });
     }
   }
+  drawKm(ctx, V, o, sel);
+  drawHandles(ctx, V, o);
   decorate(ctx, V, o, sel);
 }
 
@@ -1066,7 +1112,9 @@ function attrString() {
   if (b.under) t.push(`国土地理院「${BASES.pale.attr}」`);
   const map = t.length ? `地図：${t.join('・')}` : '';
   const dat = '路線・駅：国土交通省「国土数値情報（鉄道時系列データ）」を加工して作成';
-  return [map, dat].filter(Boolean).join('\n');
+  const own = typeof visibleDrawn === 'function' && visibleDrawn().some(l => l.pts.length > 1) ? '描いた線（' + [...new Set(visibleDrawn().map(l => DTYPES[l.type].ja))].join('・') + '）：作成者による作図' : '';
+  const kmNote = cfg.kmShow && (S.sel.some(x => x.show) || (typeof visibleDrawn === 'function' && visibleDrawn().length)) ? '距離は地図上の概算' : '';
+  return [map, dat, own, kmNote].filter(Boolean).join('\n');
 }
 function updateAttr() {
   if (cfg.attrAuto) { $('attrText').value = attrString(); }
@@ -1085,25 +1133,28 @@ function decorate(ctx, V, o, sel) {
     ctx.fillText(cfg.title, x + pad, y + (h + pad * 1.4) / 2);
   }
   // 凡例
-  if (cfg.legend && sel.size) {
+  if (cfg.legend) {
     let flags = 0;
     for (const p of S.pieces) if (sel.has(p.g) && (p.k !== 1 || cfg.showOld)) flags |= 1 << p.k;
-    const rows = [0, 1, 2].filter(kk => flags & (1 << kk));
+    const rows = [0, 1, 2].filter(kk => flags & (1 << kk)).map(kk => ({ label: CLS_JA[CLS[kk]], sty: cfg.sty[CLS[kk]], col: cfg.sty[CLS[kk]].color }));
+    const seenT = new Set();
+    for (const l of visibleDrawn()) if (l.pts.length > 1 && !seenT.has(l.type)) { seenT.add(l.type); rows.push({ label: DTYPES[l.type].ja, sty: dSty(l), col: dColor(l) }); }
     if (rows.length) {
       const fs = 13 * k, rh = fs * 1.9, pad = 8 * k, sw = 40 * k;
       ctx.font = fontCss(cfg.fontLabel, fs, false);
-      const tw = Math.max(...rows.map(kk => ctx.measureText(CLS_JA[kk === 2 ? 'abandoned' : CLS[kk]]).width));
+      const tw = Math.max(...rows.map(r => ctx.measureText(r.label).width));
       const bw = pad * 3 + sw + tw, bh = pad * 2 + rh * rows.length;
       const onLeftBottom = cfg.attrPos === 'bl';
       const x = onLeftBottom ? f.x + f.w - bw - 14 * k : f.x + 14 * k, y = f.y + f.h - bh - 14 * k;
       ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillRect(x, y, bw, bh);
-      rows.forEach((kk, i) => {
-        const sty = cfg.sty[CLS[kk]], cy = y + pad + rh * (i + 0.5);
+      rows.forEach((r, i) => {
+        const cy = y + pad + rh * (i + 0.5);
         const ln = [[[x + pad, cy], [x + pad + sw, cy]]];
-        if (sty.casing) casingOf(sty, ln, ctx, k);
-        strokeStyled(ctx, ln, sty, sty.color, k);
+        if (r.sty.casing) casingOf(r.sty, ln, ctx, k);
+        strokeStyled(ctx, ln, r.sty, r.col, k);
+        ctx.font = fontCss(cfg.fontLabel, fs, false);
         ctx.fillStyle = '#222'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-        ctx.fillText(CLS_JA[CLS[kk]], x + pad * 2 + sw, cy);
+        ctx.fillText(r.label, x + pad * 2 + sw, cy);
       });
     }
   }
@@ -1133,6 +1184,7 @@ function drawScreen() {
   octx.setTransform(dpr, 0, 0, dpr, 0, 0);
   octx.clearRect(0, 0, s.x, s.y);
   labelBoxes = [];
+  if (cfg.attrAuto) { const t = attrString(); if ($('attrText').value !== t) $('attrText').value = t; }
   if (!S.loaded) return;
   const V = screenView();
   if (mode === 'view') drawView(octx, V);
@@ -1168,6 +1220,13 @@ function drawView(ctx, V) {
   const allAb = [].concat(...ab.values());
   if (allAb.length) strokeLines(ctx, allAb, 5.5, 'rgba(255,255,255,.9)', []);
   for (const [col, ls] of ab) strokeLines(ctx, ls, 3, col, []);
+  for (const l of visibleDrawn()) {
+    if (l.pts.length < 2) continue;
+    if (VW.yearOn && ((l.y0 && l.y0 > VW.year) || (l.y1 && l.y1 <= VW.year))) continue;
+    const line = curveOf(l).pts.map(([x, y]) => V.P(x, y));
+    strokeLines(ctx, [line], 5, 'rgba(255,255,255,.9)', []);
+    strokeLines(ctx, [line], 3, dColor(l), [7, 5]);
+  }
   // えらんだ路線を強調
   if (hl.length) {
     strokeLines(ctx, hl.map(h => h[1]), 14, 'rgba(255,212,59,.75)', []);
@@ -1186,6 +1245,10 @@ function drawView(ctx, V) {
       ctx.lineWidth = 2; ctx.strokeStyle = st.k === 0 ? '#333' : '#e3262f'; ctx.stroke();
       if (V.z >= 10) textBox(ctx, st.n, x + 8, y, 12, 1, 'left', '#222222', '#ffffff', true);
     }
+  }
+  if (VW.km && VW.sel != null) {
+    const g = S.groups[VW.sel], sv = S.sel.find(x => x.gi === VW.sel);
+    drawKmLabels(ctx, V, { screen: false }, kmStopsGroup(g, !!(sv && sv.flip)), 'vkm', () => true, x => x.st.n);
   }
   if (VW.yearOn) {
     ctx.font = `bold 44px ${FONT}`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
@@ -1245,23 +1308,66 @@ function loadData(d, src) {
   // 保存していた選択を復元
   if (S.pendingSel) {
     const byKey = new Map(S.groups.map(g => [gkey(g), g.i]));
-    S.sel = S.pendingSel.filter(s => byKey.has(s.key)).map(s => ({ gi: byKey.get(s.key), show: s.show !== false, color: s.color || '' }));
+    S.sel = S.pendingSel.filter(s => byKey.has(s.key)).map(s => ({ gi: byKey.get(s.key), show: s.show !== false, color: s.color || '', flip: !!s.flip }));
     S.pendingSel = null;
   }
   renderSel(); doSearch(); redraw();
 }
 function setStatus(t) { $('status').textContent = t; }
 
+/* ---------- ブラウザの中にデータを覚えておく（IndexedDB） ---------- */
+const IDB = {
+  db: null,
+  open() {
+    if (this.db) return Promise.resolve(this.db);
+    return new Promise((res, rej) => {
+      const r = indexedDB.open('haisen-kasane', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => { this.db = r.result; res(r.result); };
+      r.onerror = () => rej(r.error);
+    });
+  },
+  async run(mode, fn) {
+    const db = await this.open();
+    return new Promise((res, rej) => {
+      const tx = db.transaction('kv', mode), st = tx.objectStore('kv');
+      const rq = fn(st);
+      tx.oncomplete = () => res(rq && rq.result);
+      tx.onerror = tx.onabort = () => rej(tx.error);
+    });
+  },
+  get(k) { return this.run('readonly', st => st.get(k)); },
+  set(k, v) { return this.run('readwrite', st => st.put(v, k)); },
+  del(k) { return this.run('readwrite', st => st.delete(k)); }
+};
+async function cacheData(d) {
+  try {
+    await IDB.set('rail', { d, at: new Date().toISOString() });
+    S.cachedAt = new Date().toISOString();
+    toast('このブラウザにデータを覚えた。次からは開くだけで使える');
+  } catch (e) { console.error(e); S.cachedAt = null; toast('ブラウザに覚えられなかった（容量不足かも）'); }
+  renderInfo();
+}
 async function autoLoad() {
+  // ①同じ場所の rail_n05.json（自分のパソコンで使う場合など）
   try {
     const r = await fetch('rail_n05.json', { cache: 'no-cache' });
-    if (!r.ok) throw 0;
-    setStatus('rail_n05.json を読み込み中…');
-    loadData(await r.json(), 'rail_n05.json');
-  } catch (e) {
-    setStatus('データ未読込：下の「データのセットアップ」から読み込んで');
-    renderInfo(); openSetup();
-  }
+    if (r.ok) {
+      setStatus('rail_n05.json を読み込み中…');
+      loadData(await r.json(), 'rail_n05.json');
+      try { const c = await IDB.get('rail'); S.cachedAt = c ? c.at : null; } catch (e) {}
+      renderInfo();
+      return;
+    }
+  } catch (e) {}
+  // ②ブラウザに覚えているデータ
+  try {
+    setStatus('ブラウザに覚えたデータを読み込み中…');
+    const c = await IDB.get('rail');
+    if (c && c.d) { S.cachedAt = c.at; loadData(c.d, 'ブラウザに覚えたデータ'); return; }
+  } catch (e) { console.error(e); }
+  setStatus('データ未読込：下の「データのセットアップ」から読み込んで');
+  renderInfo(); openSetup();
 }
 
 /* ---------- セットアップ窓 ---------- */
@@ -1273,14 +1379,21 @@ $('setup').addEventListener('click', e => { if (e.target.id === 'setup') closeSe
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('modal').style.display !== 'flex') closeSetup(); });
 function renderInfo() {
   const el = $('dataInfo'), i = S.info;
-  if (!i) { el.innerHTML = '<b>データ：まだ読み込まれていない</b><br>index.html と同じ場所に rail_n05.json が無いか、ファイルを直接開いている。'; return; }
+  if (!i) { el.innerHTML = '<b>データ：まだ読み込まれていない</b><br>N05のzipか、控えの rail_n05.json をドロップしてね。一度入れれば、このブラウザが覚える。'; return; }
   const dt = i.made ? new Date(i.made) : null;
   el.innerHTML = `<b>いま使っているデータ：${escapeHtml(i.src)}</b>` +
     (i.orig ? `<br>元データ：${escapeHtml(i.orig)}` : '') +
     (dt && !isNaN(dt) ? `<br>変換日：${dt.getFullYear()}/${dt.getMonth() + 1}/${dt.getDate()}` : '') +
     `<br>路線 ${i.ng}（うち全廃 ${i.nAb}）・駅 ${i.ns}` +
-    (S.json ? '<br><span style="color:var(--acc)">変換したばかり。「rail_n05.json を保存」してGitHubに置いてね。</span>' : '');
+    (S.cachedAt ? `<br>このブラウザに覚えている（${fmtDate(S.cachedAt)}）　<button id="forgetData" style="padding:1px 8px">ブラウザから消す</button>` : '<br>このブラウザにはまだ覚えていない') +
+    (S.json ? '<br><span style="color:var(--acc)">変換したばかり。控えとして「rail_n05.json を保存」しておくと、別のブラウザでも使える。</span>' : '');
 }
+
+$('dataInfo').addEventListener('click', async e => {
+  if (e.target.id !== 'forgetData') return;
+  if (!confirm('このブラウザに覚えている路線データを消す？（いま表示中のデータはページを閉じるまで使える）')) return;
+  try { await IDB.del('rail'); S.cachedAt = null; renderInfo(); toast('消した'); } catch (err) { alert('消せなかった：' + err.message); }
+});
 
 /* ---------- ファイル投入・変換 ---------- */
 const drop = $('drop');
@@ -1297,7 +1410,7 @@ async function handleFile(file) {
     if (/\.(json|geojson)$/i.test(file.name)) {
       setStatus('読み込み中…');
       const d = JSON.parse(await file.text());
-      if (d.fmt === 'haisen-rail-1') { S.json = null; loadData(d, file.name); return; }
+      if (d.fmt === 'haisen-rail-1') { S.json = null; loadData(d, file.name); cacheData(d); return; }
       alert('このJSONは変換済みデータ（rail_n05.json）じゃないみたい。N05はzipのまま入れてね。');
       return;
     }
@@ -1398,6 +1511,7 @@ $('mGo').onclick = async () => {
     S.json = JSON.stringify(d);
     mlog(`サイズ ${(S.json.length / 1048576).toFixed(1)}MB／${((performance.now() - t0) / 1000).toFixed(1)}秒`);
     loadData(d, '変換データ');
+    cacheData(d);
     $('saveJson').disabled = false;
     setTimeout(() => { $('modal').style.display = 'none'; }, 900);
   } catch (e) { console.error(e); mlog('エラー：' + e.message); }
@@ -1461,6 +1575,7 @@ function renderSel() {
       <div class="grow"><span class="nm">${escapeHtml(g.n)}</span>${tags(g)}<div class="co">${escapeHtml(g.c)}</div></div>
       <input type="color" class="cl" value="${col}" title="この路線だけ色を変える">
       ${s.color ? '<button class="x rc" title="色を既定にもどす">↺</button>' : ''}
+      ${cfg.kmShow ? `<button class="x fp" title="距離の起点を逆にする"${s.flip ? ' style="color:var(--acc)"' : ''}>⇄</button>` : ''}
       <button class="x zm" title="移動">⌖</button>
       <button class="x rm" title="はずす">×</button></div>`;
   }).join('');
@@ -1482,6 +1597,7 @@ $('selList').addEventListener('click', e => {
   if (e.target.classList.contains('rm')) { S.sel.splice(i, 1); renderSel(); save(); redraw(); }
   if (e.target.classList.contains('rc')) { S.sel[i].color = ''; renderSel(); save(); redraw(); }
   if (e.target.classList.contains('zm')) zoomTo([S.sel[i].gi]);
+  if (e.target.classList.contains('fp')) { S.sel[i].flip = !S.sel[i].flip; renderSel(); save(); redraw(); toast('距離の起点を逆にした'); }
 });
 $('zoomSel').onclick = () => zoomTo(S.sel.filter(s => s.show).map(s => s.gi));
 $('clearSel').onclick = () => { if (S.sel.length && confirm('えらんだ路線を全部はずす？')) { S.sel = []; renderSel(); save(); redraw(); } };
@@ -1515,6 +1631,7 @@ function hitLabel(pt) {
 }
 function onDown(e) {
   if (e.button > 0) return;
+  if (DR.adding) return;
   const pt = evPt(e);
   const hit = drag ? true : hitLabel(pt);
   if (!hit) return;
@@ -1541,7 +1658,7 @@ function onDown(e) {
   if (e.type === 'touchstart') { window.addEventListener('touchmove', mv, { passive: false }); window.addEventListener('touchend', up); }
   else { window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); }
 }
-['pointerdown', 'mousedown', 'touchstart'].forEach(t => mapEl.addEventListener(t, onDown, { capture: true, passive: false }));
+['pointerdown', 'mousedown', 'touchstart'].forEach(t => { mapEl.addEventListener(t, e => drawOnDown(e), { capture: true, passive: false }); mapEl.addEventListener(t, onDown, { capture: true, passive: false }); });
 mapEl.addEventListener('click', e => { if (drag) { e.stopPropagation(); } }, true);
 
 function hitLine(pt) {
@@ -1569,10 +1686,12 @@ function hitLine(pt) {
 let hovRaf = 0, lastMv = null;
 mapEl.addEventListener('mousemove', e => {
   lastMv = evPt(e);
-  if (drag || hovRaf) return;
+  if (mode === 'make' && DR.adding && !DR.drag) { drawHover(lastMv, e.altKey); return; }
+  if (drag || hovRaf || DR.drag) return;
   hovRaf = requestAnimationFrame(() => {
     hovRaf = 0;
     const pt = lastMv;
+    if (mode === 'make' && DR.lineId && hitHandle(pt) >= 0) { mainEl.className = 'lh'; tip.style.display = 'none'; return; }
     if (hitLabel(pt)) { mainEl.className = 'lh'; tip.style.display = 'none'; return; }
     const p = hitLine(pt);
     if (p) {
@@ -1591,11 +1710,12 @@ mapEl.addEventListener('mousemove', e => {
 mapEl.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
 map.on('click', e => {
   if (drag) return;
+  if (mode === 'make' && drawClick(e)) return;
   const p = hitLine({ x: e.containerPoint.x, y: e.containerPoint.y });
   if (mode === 'view') { showInfo(p ? p.g : null); tip.style.display = 'none'; return; }
   if (p && !S.sel.some(s => s.gi === p.g)) { addSel(p.g, false); tip.style.display = 'none'; }
 });
-const TEXT_KEYS = ['fontLabel', 'fontTitle', 'bold', 'stSize', 'lnSize', 'titleSize', 'attrSize', 'stYear', 'lnYear', 'stLabel', 'lnLabel'];
+const TEXT_KEYS = ['fontLabel', 'fontTitle', 'bold', 'stSize', 'lnSize', 'titleSize', 'attrSize', 'stYear', 'lnYear', 'stLabel', 'lnLabel', 'kmSize'];
 let undoText = null, undoT = 0;
 const RESET_TXT = '文字を全部もとに戻す';
 function textIsDefault() { return !Object.keys(S.offsets).length && !Object.keys(S.lstyle).length && TEXT_KEYS.every(k => cfg[k] === DEF[k]); }
@@ -1673,6 +1793,7 @@ function setMode(m) {
   try { localStorage.setItem('haisen-kasane-mode', m); } catch (e) {}
   closePop(); tip.style.display = 'none'; mainEl.className = '';
   if (m === 'make' && playT) stopPlay();
+  if (m === 'view' && DR.lineId) endEdit();
   $('qHint').textContent = m === 'view' ? '地図の線をクリックしても情報が見られる。' : '地図上のうすい線をクリックしても追加できる（赤っぽいのが廃線）。';
   $('q').placeholder = m === 'view' ? '路線名・会社名・駅名で探して情報を見る' : '路線名・会社名・駅名（例：倉吉、丸ノ内）';
   placeFrame(); doSearch(); redraw();
@@ -1681,6 +1802,7 @@ document.querySelectorAll('.modeSw button').forEach(b => b.onclick = () => setMo
 
 /* ---------- 見るモードの操作 ---------- */
 function syncView() {
+  $('vKm').checked = VW.km;
   $('vYearOn').checked = VW.yearOn; $('vCur').checked = VW.cur; $('vOld').checked = VW.old; $('vDecade').checked = VW.decade;
   $('vYear').value = VW.year; $('vYearLbl').textContent = VW.year + '年';
   renderLegend();
@@ -1701,6 +1823,7 @@ $('vYearOn').onchange = e => { VW.yearOn = e.target.checked; saveVW(); redraw();
 $('vCur').onchange = e => { VW.cur = e.target.checked; saveVW(); redraw(); };
 $('vOld').onchange = e => { VW.old = e.target.checked; saveVW(); redraw(); };
 $('vDecade').onchange = e => { VW.decade = e.target.checked; saveVW(); renderLegend(); redraw(); };
+$('vKm').onchange = e => { VW.km = e.target.checked; saveVW(); if (VW.sel != null) showInfo(VW.sel); else redraw(); };
 $('vYear').oninput = e => { VW.year = +e.target.value; $('vYearLbl').textContent = VW.year + '年'; if (!VW.yearOn) { VW.yearOn = true; $('vYearOn').checked = true; } saveVW(); redraw(); };
 let playT = 0;
 function stopPlay() { clearInterval(playT); playT = 0; $('vPlay').textContent = '▶'; }
@@ -1745,9 +1868,20 @@ function showInfo(gi) {
       <tr><td>長さ</td><td>${kmTxt || '—'}</td></tr>
       <tr><td>駅</td><td>${sts.length}駅${nClosed ? `（うち廃駅 ${nClosed}）` : ''}</td></tr>
     </table>
-    ${sts.length ? `<div class="sts">${sts.map(([i, st]) => `<a data-si="${i}" class="${st.k ? 'cl' : ''}">${escapeHtml(st.n)}${st.k ? `（–${st.y1 || '?'}）` : ''}</a>`).join('・')}</div>` : ''}
+    ${VW.km ? kmListHtml(g) : sts.length ? `<div class="sts">${sts.map(([i, st]) => `<a data-si="${i}" class="${st.k ? 'cl' : ''}">${escapeHtml(st.n)}${st.k ? `（–${st.y1 || '?'}）` : ''}</a>`).join('・')}</div>` : ''}
     <div class="row2"><button id="infoZoom">この路線に移動</button><button class="pri" id="infoUse">作るモードで使う</button></div>`;
   redraw();
+}
+function kmListHtml(g) {
+  const sv = S.sel.find(x => x.gi === g.i), R = kmStopsGroup(g, !!(sv && sv.flip));
+  if (!R.stops.length) return '<div class="hint">距離を出せる駅がない</div>';
+  let h = '<div class="sts"><table style="width:100%;margin:0">', prev = null;
+  for (const s of R.stops) {
+    const seg = prev && prev.ci === s.ci ? `<span style="color:var(--sub)">+${(s.along - prev.along).toFixed(1)}</span>` : (prev ? '<span style="color:var(--sub)">（別の枝）</span>' : '');
+    h += `<tr><td style="width:auto;color:inherit"><a data-si="${s.si}" class="${s.st.k ? 'cl' : ''}">${escapeHtml(s.st.n)}</a></td><td style="text-align:right;color:inherit">${s.along.toFixed(1)}km</td><td style="text-align:right;width:56px">${seg}</td></tr>`;
+    prev = s;
+  }
+  return h + '</table></div><div class="hint">距離は地図上の概算（営業キロとはずれる）。左が起点からの累計、右が前の駅から。</div>';
 }
 $('infoBox').addEventListener('click', e => {
   if (e.target.id === 'infoZoom') zoomTo([VW.sel]);
@@ -1795,7 +1929,8 @@ function bindCfg() {
       if (p === 'attrAuto' && !cfg.attrAuto && !cfg.attrText) cfg.attrText = $('attrText').value;
       if (p === 'attrAuto' || p === 'base') updateAttr();
       if (p === 'aspect') placeFrame();
-      if (p.startsWith('sty.')) renderSel();
+      if (p.startsWith('sty.') || p === 'kmShow') renderSel();
+      if (p === 'kmMode' && mode === 'view' && VW.sel != null) showInfo(VW.sel);
       save(); redraw();
     });
   });
@@ -1822,8 +1957,8 @@ function captureState(name) {
     name, saved: new Date().toISOString(),
     data: S.info ? (S.info.orig || S.info.src) : '',
     view: { lat: c.lat, lng: c.lng, z: map.getZoom() },
-    sel: S.sel.map(s => { const g = S.groups[s.gi]; return { key: gkey(g), n: g.n, c: g.c, show: s.show, color: s.color }; }),
-    offsets: clone(S.offsets), lstyle: clone(S.lstyle), cfg: clone(cfg)
+    sel: S.sel.map(s => { const g = S.groups[s.gi]; return { key: gkey(g), n: g.n, c: g.c, show: s.show, color: s.color, flip: !!s.flip }; }),
+    offsets: clone(S.offsets), lstyle: clone(S.lstyle), drawn: clone(S.drawn), cfg: clone(cfg)
   };
 }
 function applyState(st) {
@@ -1831,12 +1966,14 @@ function applyState(st) {
   cfg = merge(DEF, st.cfg || {});
   S.offsets = clone(st.offsets || {});
   S.lstyle = clone(st.lstyle || {});
+  S.drawn = clone(st.drawn || []);
+  DR.lineId = null; DR.adding = false; closePpop(); renderDrawList(); renderDrawEdit();
   closePop(); renderHidden();
   const byKey = new Map(S.groups.map(g => [gkey(g), g.i]));
   const miss = [];
   S.sel = [];
   for (const s of st.sel || []) {
-    if (byKey.has(s.key)) S.sel.push({ gi: byKey.get(s.key), show: s.show !== false, color: s.color || '' });
+    if (byKey.has(s.key)) S.sel.push({ gi: byKey.get(s.key), show: s.show !== false, color: s.color || '', flip: !!s.flip });
     else miss.push(`${s.n || s.key.split('|')[0]}（${s.c || s.key.split('|')[1] || ''}）`);
   }
   syncUI(); setBase(); setOpacity();
@@ -1859,6 +1996,7 @@ function renderSnaps() {
 }
 $('snapSave').onclick = () => {
   if (!S.loaded) { alert('先に路線データを読み込んでね'); return; }
+  if (DR.adding) stopAdding();
   const name = $('snapName').value.trim() || autoName();
   snaps.unshift(captureState(name));
   if (saveSnaps()) { $('snapName').value = ''; renderSnaps(); toast(`「${name}」をおぼえた`); }
@@ -1916,6 +2054,580 @@ $('projFile').onchange = async e => {
     else toast(`${add.length} 件読み込んだ。一覧から選んで呼び出してね`);
   } catch (err) { alert('読み込めなかった：' + err.message); }
 };
+
+/* ---------- 自分で描く（予定線・未成線など） ---------- */
+const DTYPES = {
+  yotei:    { ja: '予定線', dash: 'dash',  color: '#7048e8' },
+  misei:    { ja: '未成線', dash: 'chain', color: '#e8590c' },
+  keikaku:  { ja: '計画線', dash: 'dot',   color: '#1098ad' },
+  kensetsu: { ja: '建設中', dash: 'long',  color: '#f08c00' },
+  other:    { ja: 'その他', dash: 'solid', color: '#495057' }
+};
+const DR = { lineId: null, adding: false, hover: null, drag: null, pop: null };
+const uid = p => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const dLine = id => S.drawn.find(l => l.id === id);
+const activeLine = () => DR.lineId ? dLine(DR.lineId) : null;
+const dColor = l => l.color || DTYPES[l.type].color;
+const dSty = l => ({ width: l.width || 5, dash: l.dash || DTYPES[l.type].dash, casing: l.casing !== false });
+
+// なめらかな曲線（制御点を必ず通る、区間の長さに合わせた接線で行き過ぎを抑える）
+function curveOf(l) {
+  const P = l.pts.map(p => toMerc(p.lng, p.lat)), n = P.length;
+  if (n < 2) return { pts: P, seg: [0] };
+  if (!l.smooth) return { pts: P, seg: P.map((_, i) => i) };
+  const s = l.tension ?? 0.5;
+  const dir = i => {
+    if (l.pts[i].kind === 'corner') return [0, 0];
+    const a = P[Math.max(0, i - 1)], b = P[Math.min(n - 1, i + 1)];
+    const dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy) || 1;
+    return [dx / d, dy / d];
+  };
+  const D = P.map((_, i) => dir(i));
+  const out = [], seg = [];
+  for (let i = 0; i < n - 1; i++) {
+    seg.push(out.length);
+    const a = P[i], b = P[i + 1], len = Math.hypot(b[0] - a[0], b[1] - a[1]) * s;
+    const m0 = [D[i][0] * len, D[i][1] * len], m1 = [D[i + 1][0] * len, D[i + 1][1] * len];
+    const N = 20;
+    for (let j = 0; j < N; j++) {
+      const t = j / N, t2 = t * t, t3 = t2 * t;
+      const h00 = 2 * t3 - 3 * t2 + 1, h10 = t3 - 2 * t2 + t, h01 = -2 * t3 + 3 * t2, h11 = t3 - t2;
+      out.push([h00 * a[0] + h10 * m0[0] + h01 * b[0] + h11 * m1[0], h00 * a[1] + h10 * m0[1] + h01 * b[1] + h11 * m1[1]]);
+    }
+  }
+  out.push(P[n - 1]);
+  return { pts: out, seg };
+}
+const visibleDrawn = () => S.drawn.filter(l => l.show !== false && l.pts.length);
+
+function drawDrawn(ctx, V, o) {
+  const k = V.k;
+  for (const l of visibleDrawn()) {
+    if (l.pts.length < 2) continue;
+    const c = curveOf(l), line = c.pts.map(([x, y]) => V.P(x, y));
+    const sty = dSty(l);
+    if (sty.casing) casingOf(sty, [line], ctx, k);
+    strokeStyled(ctx, [line], sty, dColor(l), k);
+  }
+  // 駅
+  for (const l of visibleDrawn()) {
+    for (const p of l.pts) {
+      if (p.kind !== 'station') continue;
+      const [x, y] = V.P(...toMerc(p.lng, p.lat));
+      ctx.beginPath(); ctx.arc(x, y, cfg.stR * k, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.lineWidth = Math.max(1.5, cfg.stR * 0.45) * k; ctx.strokeStyle = dColor(l); ctx.stroke();
+    }
+  }
+  if (cfg.stLabel) {
+    for (const l of visibleDrawn()) for (const p of l.pts) {
+      if (p.kind !== 'station' || !p.name) continue;
+      const [x, y] = V.P(...toMerc(p.lng, p.lat));
+      const key = 'ds:' + l.id + ':' + p.id, ls = S.lstyle[key] || {};
+      if (ls.hide && !o.screen) continue;
+      const def = { dx: cfg.stR + 4, dy: 0 }, off = S.offsets[key] || def;
+      const b = textBox(ctx, p.name, x + off.dx * k, y + off.dy * k, ls.size || cfg.stSize, k, 'left', ls.color || '#222222', ls.halo || '#ffffff', ls.bold ?? cfg.bold, ls.hide ? 0.28 : 1);
+      if (o.screen) labelBoxes.push({ key, ...b, def, name: p.name + '駅', defSize: cfg.stSize, defColor: '#222222' });
+    }
+  }
+  // 路線名の注記
+  if (cfg.lnLabel) {
+    for (const l of visibleDrawn()) {
+      if (l.pts.length < 2 || !l.name) continue;
+      const c = curveOf(l), mid = c.pts[Math.floor(c.pts.length / 2)];
+      const [x, y] = V.P(mid[0], mid[1]);
+      const key = 'dl:' + l.id, ls = S.lstyle[key] || {};
+      if (ls.hide && !o.screen) continue;
+      const def = { dx: 0, dy: -cfg.lnSize * 1.1 }, off = S.offsets[key] || def;
+      const txt = cfg.lnYear ? `${l.name}（${DTYPES[l.type].ja}）` : l.name;
+      const b = textBox(ctx, txt, x + off.dx * k, y + off.dy * k, ls.size || cfg.lnSize, k, 'center', ls.color || dColor(l), ls.halo || '#ffffff', ls.bold ?? cfg.bold, ls.hide ? 0.28 : 1);
+      if (o.screen) labelBoxes.push({ key, ...b, def, name: l.name + '（注記）', defSize: cfg.lnSize, defColor: dColor(l) });
+    }
+  }
+}
+// 編集中の線の点（画面だけ）
+function drawHandles(ctx, V, o) {
+  const l = activeLine();
+  if (!o.screen || !l) return;
+  const col = dColor(l);
+  if (DR.adding && DR.hover && l.pts.length) {
+    const last = l.pts[l.pts.length - 1], [ax, ay] = V.P(...toMerc(last.lng, last.lat));
+    strokeLines(ctx, [[[ax, ay], [DR.hover.x, DR.hover.y]]], 2, col, [6, 5]);
+  }
+  l.pts.forEach((p, i) => {
+    const [x, y] = V.P(...toMerc(p.lng, p.lat));
+    ctx.lineWidth = 2; ctx.strokeStyle = col; ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    if (p.kind === 'corner') ctx.rect(x - 5, y - 5, 10, 10);
+    else ctx.arc(x, y, p.kind === 'station' ? 7 : 5, 0, Math.PI * 2);
+    if (p.kind === 'station') { ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#fff'; }
+    else ctx.fill();
+    ctx.stroke();
+    if (i === 0 || i === l.pts.length - 1) { ctx.beginPath(); ctx.arc(x, y, 10, 0, Math.PI * 2); ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.stroke(); }
+  });
+  if (DR.adding && DR.hover && DR.hover.snapped) {
+    ctx.beginPath(); ctx.arc(DR.hover.x, DR.hover.y, 11, 0, Math.PI * 2);
+    ctx.strokeStyle = '#2f9e44'; ctx.lineWidth = 2.5; ctx.stroke();
+  }
+}
+
+// 吸いつき：近くの駅・線の端・ほかの描いた点
+function snapAt(pt, alt, skip) {
+  const ll = map.containerPointToLatLng([pt.x, pt.y]);
+  if (alt) return { lat: ll.lat, lng: ll.lng, x: pt.x, y: pt.y, snapped: false };
+  const V = screenView(), tol = 12;
+  let best = null, bd = tol;
+  const test = (mx, my, src) => {
+    const [x, y] = V.P(mx, my), d = Math.hypot(x - pt.x, y - pt.y);
+    if (d < bd) { bd = d; best = { x, y, src, mx, my }; }
+  };
+  const sel = new Set(S.sel.filter(s => s.show).map(s => s.gi));
+  for (const st of S.stations) if (sel.has(st.g)) test(st.mx, st.my);
+  for (const p of S.pieces) if (sel.has(p.g)) { test(p.mx[0], p.my[0]); test(p.mx[p.mx.length - 1], p.my[p.my.length - 1]); }
+  for (const l of S.drawn) l.pts.forEach(p => { if (p !== skip) test(...toMerc(p.lng, p.lat)); });
+  if (!best) return { lat: ll.lat, lng: ll.lng, x: pt.x, y: pt.y, snapped: false };
+  const [lat, lng] = fromMerc(best.mx, best.my);
+  return { lat, lng, x: best.x, y: best.y, snapped: true };
+}
+function hitHandle(pt) {
+  const l = activeLine(); if (!l) return -1;
+  const V = screenView();
+  for (let i = l.pts.length - 1; i >= 0; i--) {
+    const [x, y] = V.P(...toMerc(l.pts[i].lng, l.pts[i].lat));
+    if (Math.hypot(x - pt.x, y - pt.y) <= 9) return i;
+  }
+  return -1;
+}
+// 編集中の線のどの区間をクリックしたか
+function hitSegment(pt) {
+  const l = activeLine(); if (!l || l.pts.length < 2) return -1;
+  const V = screenView(), c = curveOf(l), sp = c.pts.map(([x, y]) => V.P(x, y));
+  let bj = -1, bd = 8;
+  for (let j = 1; j < sp.length; j++) {
+    const [ax, ay] = sp[j - 1], [bx, by] = sp[j], dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+    let t = L2 ? ((pt.x - ax) * dx + (pt.y - ay) * dy) / L2 : 0; t = Math.max(0, Math.min(1, t));
+    const d = Math.hypot(pt.x - ax - t * dx, pt.y - ay - t * dy);
+    if (d < bd) { bd = d; bj = j - 1; }
+  }
+  if (bj < 0) return -1;
+  let seg = 0;
+  for (let i = 0; i < c.seg.length; i++) if (c.seg[i] <= bj) seg = i;
+  return seg;
+}
+
+function drawOnDown(e) {
+  if (mode !== 'make' || !DR.lineId || (e.button > 0)) return;
+  const pt = evPt(e);
+  if (DR.drag) { e.stopImmediatePropagation(); e.preventDefault(); return; }
+  const i = hitHandle(pt);
+  if (i < 0) return;
+  e.stopImmediatePropagation(); e.preventDefault();
+  const l = activeLine();
+  DR.drag = { i, sx: pt.x, sy: pt.y, moved: false };
+  closePpop(); tip.style.display = 'none';
+  const mv = ev => {
+    const p = evPt(ev);
+    if (!DR.drag.moved && Math.hypot(p.x - DR.drag.sx, p.y - DR.drag.sy) < 4) return;
+    DR.drag.moved = true;
+    const sn = snapAt(p, ev.altKey, l.pts[DR.drag.i]);
+    l.pts[DR.drag.i].lat = sn.lat; l.pts[DR.drag.i].lng = sn.lng;
+    DR.hover = null; redraw(); ev.preventDefault();
+  };
+  const up = () => {
+    window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up);
+    window.removeEventListener('touchmove', mv); window.removeEventListener('touchend', up);
+    const d = DR.drag;
+    setTimeout(() => { DR.drag = null; }, 0);
+    if (d && !d.moved) openPpop(d.i); else { save(); renderDrawEdit(); }
+  };
+  if (e.type === 'touchstart') { window.addEventListener('touchmove', mv, { passive: false }); window.addEventListener('touchend', up); }
+  else { window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); }
+}
+// 地図クリック：点を足す／線の途中に点を入れる。処理したら true
+function drawClick(e) {
+  if (DR.drag) return true;
+  const l = activeLine(); if (!l) return false;
+  const pt = { x: e.containerPoint.x, y: e.containerPoint.y }, alt = e.originalEvent && e.originalEvent.altKey;
+  if (DR.adding) {
+    const sn = snapAt(pt, alt);
+    const last = l.pts[l.pts.length - 1];
+    if (last) { const V = screenView(), [lx, ly] = V.P(...toMerc(last.lng, last.lat)); if (Math.hypot(lx - sn.x, ly - sn.y) < 3) return true; }
+    l.pts.push({ id: uid('p'), lat: sn.lat, lng: sn.lng, kind: 'shape', name: '' });
+    save(); renderDrawEdit(); redraw();
+    return true;
+  }
+  const seg = hitSegment(pt);
+  if (seg >= 0) {
+    const sn = snapAt(pt, alt);
+    l.pts.splice(seg + 1, 0, { id: uid('p'), lat: sn.lat, lng: sn.lng, kind: 'shape', name: '' });
+    save(); renderDrawEdit(); redraw();
+    return true;
+  }
+  return false;
+}
+function drawHover(pt, alt) {
+  if (!DR.adding) return false;
+  DR.hover = snapAt(pt, alt);
+  mainEl.className = 'dr'; tip.style.display = 'none';
+  redraw();
+  return true;
+}
+
+// 点の窓
+function openPpop(i) {
+  const l = activeLine(); if (!l) return;
+  const p = l.pts[i]; DR.pop = p.id;
+  document.querySelectorAll('input[name=ppk]').forEach(r => r.checked = r.value === p.kind);
+  $('ppName').value = p.name || '';
+  $('ppName').disabled = p.kind !== 'station';
+  const V = screenView(), [x, y] = V.P(...toMerc(p.lng, p.lat)), pop = $('ppop'), sz = map.getSize();
+  pop.style.display = 'block';
+  pop.style.left = Math.max(4, Math.min(x + 14, sz.x - 222)) + 'px';
+  pop.style.top = Math.max(4, Math.min(y - 20, sz.y - pop.offsetHeight - 6)) + 'px';
+  if (p.kind === 'station' && !p.name) setTimeout(() => $('ppName').focus(), 0);
+}
+function closePpop() { $('ppop').style.display = 'none'; DR.pop = null; }
+const popPt = () => { const l = activeLine(); return l ? l.pts.find(p => p.id === DR.pop) : null; };
+document.querySelectorAll('input[name=ppk]').forEach(r => r.onchange = () => {
+  const p = popPt(); if (!p) return;
+  p.kind = r.value; $('ppName').disabled = p.kind !== 'station';
+  if (p.kind === 'station') $('ppName').focus();
+  save(); renderDrawEdit(); redraw();
+});
+$('ppName').oninput = e => { const p = popPt(); if (!p) return; p.name = e.target.value; save(); redraw(); };
+$('ppName').onkeydown = e => { if (e.key === 'Enter') closePpop(); };
+function deletePoint(id) {
+  const l = activeLine(); if (!l) return;
+  const i = l.pts.findIndex(p => p.id === id); if (i < 0) return;
+  l.pts.splice(i, 1);
+  closePpop(); save(); renderDrawEdit(); redraw();
+}
+$('ppDel').onclick = () => { if (DR.pop) deletePoint(DR.pop); };
+$('ppClose').onclick = closePpop;
+map.on('movestart zoomstart', closePpop);
+
+// 線の一覧と編集欄
+function startNewLine() {
+  if (!S.loaded) { alert('先に路線データを読み込んでね'); return; }
+  const l = { id: uid('d'), name: '', type: 'yotei', color: '', dash: '', width: 5, casing: true, smooth: true, tension: 0.5, y0: '', y1: '', show: true, pts: [] };
+  S.drawn.push(l);
+  editLine(l.id, true);
+  setTimeout(() => $('deName') && $('deName').focus(), 0);
+}
+function editLine(id, adding) {
+  DR.lineId = id; DR.adding = !!adding; DR.hover = null;
+  if (DR.adding) map.doubleClickZoom.disable(); else map.doubleClickZoom.enable();
+  closePpop(); renderDrawList(); renderDrawEdit(); save(); redraw();
+}
+function stopAdding() {
+  DR.adding = false; DR.hover = null; map.doubleClickZoom.enable(); mainEl.className = '';
+  renderDrawEdit(); redraw();
+}
+function endEdit() { DR.lineId = null; stopAdding(); closePpop(); renderDrawList(); renderDrawEdit(); }
+function renderDrawList() {
+  const el = $('drawList');
+  if (!S.drawn.length) { el.innerHTML = '<div class="hint">まだない。</div>'; return; }
+  el.innerHTML = S.drawn.map(l => `<div class="item${l.id === DR.lineId ? ' on' : ''}" data-id="${l.id}">
+    <input type="checkbox" class="sh" ${l.show !== false ? 'checked' : ''} title="表示">
+    <div class="grow ed" style="cursor:pointer"><span class="nm">${escapeHtml(l.name || '（名前なし）')}</span><span class="tag" style="background:${dColor(l)}">${DTYPES[l.type].ja}</span>
+    <div class="co">点 ${l.pts.length}・駅 ${l.pts.filter(p => p.kind === 'station').length}${l.y0 || l.y1 ? `・${l.y0 || '?'}〜${l.y1 || ''}` : ''}</div></div>
+    <button class="x zm" title="移動">⌖</button><button class="x rm" title="消す">×</button></div>`).join('');
+}
+function renderDrawEdit() {
+  const el = $('drawEdit'), l = activeLine();
+  if (!l) { el.innerHTML = ''; renderDrawList(); return; }
+  const nSt = l.pts.filter(p => p.kind === 'station').length;
+  el.innerHTML = `<div class="drEdit">
+    <div class="row2"><b style="flex:1">編集中の線</b><button id="deDone">編集を終える</button></div>
+    <div class="row2">名前 <input type="text" id="deName" style="flex:1" value="${escapeHtml(l.name)}" placeholder="例：五新線"></div>
+    <div class="row2">種類 <select id="deType">${Object.entries(DTYPES).map(([k, t]) => `<option value="${k}" ${k === l.type ? 'selected' : ''}>${t.ja}</option>`).join('')}</select>
+      色 <input type="color" id="deColor" value="${dColor(l)}">${l.color ? '<button class="x" id="deColorReset" title="種類の色に戻す">↺</button>' : ''}</div>
+    <div class="row2">線 <select id="deDash">${DASHES.map(([v, n]) => `<option value="${v}" ${v === dSty(l).dash ? 'selected' : ''}>${n}</option>`).join('')}</select>
+      太さ <input type="number" id="deWidth" min="1" max="20" step="0.5" value="${l.width || 5}"></div>
+    <label class="row"><input type="checkbox" id="deCasing" ${l.casing !== false ? 'checked' : ''}>白ふち</label>
+    <label class="row"><input type="checkbox" id="deSmooth" ${l.smooth ? 'checked' : ''}>なめらかな曲線にする</label>
+    <div class="row2">曲がり具合 <span class="hint">きつい</span><input type="range" id="deTension" min="0.15" max="1" step="0.05" value="${l.tension ?? 0.5}" style="flex:1" ${l.smooth ? '' : 'disabled'}><span class="hint">ゆるい</span></div>
+    <div class="row2">年 <input type="number" id="deY0" style="width:70px" value="${l.y0 || ''}" placeholder="計画・着工">〜<input type="number" id="deY1" style="width:70px" value="${l.y1 || ''}" placeholder="中止など"></div>
+    <div class="row2"><button class="${DR.adding ? '' : 'pri'}" id="deAdd">${DR.adding ? '■ 点を置くのをやめる' : '＋ 点を置く（続きを描く）'}</button><button id="deRev" title="向きを逆にする（始点側に描き足したいとき）">⇄ 向きを逆に</button></div>
+    <div class="hint">点 ${l.pts.length}個・駅 ${nSt}${DR.adding ? '<br><b style="color:var(--acc)">点を置くモード中</b>：地図をクリックで点を足す。ダブルクリックかEnterでおわり。' : ''}</div>
+  </div>`;
+  renderDrawList();
+}
+$('drNew').onclick = startNewLine;
+$('drawList').addEventListener('click', e => {
+  const it = e.target.closest('.item'); if (!it) return;
+  const l = dLine(it.dataset.id); if (!l) return;
+  if (e.target.classList.contains('rm')) {
+    if (!confirm(`「${l.name || '名前なし'}」を消す？`)) return;
+    S.drawn = S.drawn.filter(x => x !== l);
+    if (DR.lineId === l.id) endEdit();
+    save(); renderDrawList(); redraw(); return;
+  }
+  if (e.target.classList.contains('zm')) { zoomToDrawn(l); return; }
+  if (e.target.closest('.ed')) { if (DR.lineId === l.id) endEdit(); else editLine(l.id, false); }
+});
+$('drawList').addEventListener('change', e => {
+  const it = e.target.closest('.item'); if (!it || !e.target.classList.contains('sh')) return;
+  const l = dLine(it.dataset.id); l.show = e.target.checked; save(); redraw();
+});
+$('drawEdit').addEventListener('input', e => {
+  const l = activeLine(); if (!l) return;
+  const id = e.target.id, v = e.target.value;
+  if (id === 'deName') l.name = v;
+  else if (id === 'deColor') l.color = v;
+  else if (id === 'deWidth') l.width = parseFloat(v) || 5;
+  else if (id === 'deTension') l.tension = parseFloat(v);
+  else if (id === 'deY0') l.y0 = v ? parseInt(v, 10) : '';
+  else if (id === 'deY1') l.y1 = v ? parseInt(v, 10) : '';
+  else return;
+  save(); redraw();
+  if (id === 'deName' || id === 'deY0' || id === 'deY1') renderDrawList();
+});
+$('drawEdit').addEventListener('change', e => {
+  const l = activeLine(); if (!l) return;
+  const id = e.target.id;
+  if (id === 'deType') { l.type = e.target.value; l.dash = ''; renderDrawEdit(); }
+  else if (id === 'deDash') l.dash = e.target.value;
+  else if (id === 'deCasing') l.casing = e.target.checked;
+  else if (id === 'deSmooth') { l.smooth = e.target.checked; renderDrawEdit(); }
+  else if (id === 'deColor') renderDrawEdit();
+  else return;
+  save(); redraw();
+});
+$('drawEdit').addEventListener('click', e => {
+  const l = activeLine(); if (!l) return;
+  if (e.target.id === 'deDone') endEdit();
+  if (e.target.id === 'deAdd') { if (DR.adding) stopAdding(); else editLine(l.id, true); }
+  if (e.target.id === 'deRev') { l.pts.reverse(); save(); redraw(); toast('向きを逆にした。続きは今の終点側にのびる'); }
+  if (e.target.id === 'deColorReset') { l.color = ''; save(); renderDrawEdit(); redraw(); }
+});
+function zoomToDrawn(l) {
+  if (!l.pts.length) return;
+  if (l.pts.length === 1) { map.setView([l.pts[0].lat, l.pts[0].lng], Math.max(map.getZoom(), 13)); return; }
+  map.fitBounds(l.pts.map(p => [p.lat, p.lng]), { padding: [60, 60], maxZoom: 16 });
+}
+map.on('dblclick', () => { if (DR.adding) stopAdding(); });
+mapEl.addEventListener('contextmenu', e => {
+  if (mode !== 'make' || !DR.lineId) return;
+  const i = hitHandle(evPt(e));
+  if (i < 0) return;
+  e.preventDefault(); e.stopPropagation();
+  deletePoint(activeLine().pts[i].id);
+});
+document.addEventListener('keydown', e => {
+  if (mode !== 'make' || !DR.lineId) return;
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  if (DR.adding && (e.key === 'Enter' || e.key === 'Escape')) { stopAdding(); e.preventDefault(); return; }
+  if ((e.key === 'Delete' || e.key === 'Backspace') && DR.pop) { deletePoint(DR.pop); e.preventDefault(); return; }
+  if (e.key === 'Escape') { if (DR.pop) closePpop(); else endEdit(); }
+});
+
+// GeoJSON
+function drawnToGeoJSON() {
+  const feats = [];
+  for (const l of S.drawn) {
+    if (l.pts.length < 2) continue;
+    const coords = curveOf(l).pts.map(([mx, my]) => { const [lat, lng] = fromMerc(mx, my); return [+lng.toFixed(6), +lat.toFixed(6)]; });
+    feats.push({ type: 'Feature', geometry: { type: 'LineString', coordinates: coords },
+      properties: { name: l.name, kind: DTYPES[l.type].ja, y0: l.y0 || null, y1: l.y1 || null, color: dColor(l),
+        _haisen: { type: l.type, color: l.color, dash: l.dash, width: l.width, casing: l.casing, smooth: l.smooth, tension: l.tension, pts: l.pts.map(p => ({ lat: p.lat, lng: p.lng, kind: p.kind, name: p.name })) } } });
+    for (const p of l.pts) if (p.kind === 'station') feats.push({ type: 'Feature', geometry: { type: 'Point', coordinates: [+p.lng.toFixed(6), +p.lat.toFixed(6)] }, properties: { name: p.name, line: l.name, _haisenStation: true } });
+  }
+  return { type: 'FeatureCollection', features: feats };
+}
+$('drGeoOut').onclick = () => {
+  if (!S.drawn.some(l => l.pts.length >= 2)) { alert('書き出す線がまだない'); return; }
+  download(new Blob([JSON.stringify(drawnToGeoJSON(), null, 1)], { type: 'application/geo+json' }), '描いた線.geojson');
+};
+$('drGeoIn').onclick = () => $('drGeoFile').click();
+$('drGeoFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const gj = JSON.parse(await f.text());
+    const feats = gj.type === 'FeatureCollection' ? gj.features : gj.type === 'Feature' ? [gj] : [];
+    const added = [], plainLines = [];
+    for (const ft of feats) {
+      const g = ft.geometry, pr = ft.properties || {};
+      if (!g) continue;
+      if (g.type === 'LineString' || g.type === 'MultiLineString') {
+        const h = pr._haisen;
+        if (h && Array.isArray(h.pts)) {
+          added.push({ id: uid('d'), name: pr.name || '', type: DTYPES[h.type] ? h.type : 'other', color: h.color || '', dash: h.dash || '', width: h.width || 5, casing: h.casing !== false, smooth: !!h.smooth, tension: h.tension ?? 0.5, y0: pr.y0 || '', y1: pr.y1 || '', show: true, pts: h.pts.map(p => ({ id: uid('p'), lat: p.lat, lng: p.lng, kind: p.kind || 'shape', name: p.name || '' })) });
+        } else {
+          const parts = g.type === 'LineString' ? [g.coordinates] : g.coordinates;
+          for (const part of parts) {
+            const l = { id: uid('d'), name: pr.name || pr.N05_002 || '読み込んだ線', type: 'other', color: '', dash: '', width: 5, casing: true, smooth: false, tension: 0.5, y0: '', y1: '', show: true, pts: part.map(([lng, lat]) => ({ id: uid('p'), lat, lng, kind: 'shape', name: '' })) };
+            added.push(l); plainLines.push(l);
+          }
+        }
+      }
+    }
+    // ふつうのGeoJSONの点は、近くの頂点を駅にする
+    for (const ft of feats) {
+      const g = ft.geometry, pr = ft.properties || {};
+      if (!g || g.type !== 'Point' || pr._haisenStation || !pr.name) continue;
+      const [lng, lat] = g.coordinates;
+      let best = null, bd = 60;
+      for (const l of plainLines) for (const p of l.pts) {
+        const d = Math.hypot((p.lng - lng) * 111320 * Math.cos(lat * Math.PI / 180), (p.lat - lat) * 110574);
+        if (d < bd) { bd = d; best = p; }
+      }
+      if (best) { best.kind = 'station'; best.name = pr.name; }
+    }
+    if (!added.length) { alert('線が見つからなかった'); return; }
+    S.drawn.push(...added);
+    save(); renderDrawList(); redraw(); zoomToDrawn(added[0]);
+    toast(`${added.length}本の線を読み込んだ`);
+  } catch (err) { alert('読み込めなかった：' + err.message); }
+};
+
+/* ---------- 駅間の距離（地図上の概算） ---------- */
+const kmScale = my => 40075.017 / Math.cosh(Math.PI * (1 - 2 * my)); // メルカトル1単位あたりのkm
+function makeChain(pts) {
+  const cum = [0];
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    cum.push(cum[i - 1] + Math.hypot(b[0] - a[0], b[1] - a[1]) * kmScale((a[1] + b[1]) / 2));
+  }
+  return { pts, cum, total: cum[cum.length - 1] };
+}
+function projectOn(ch, mx, my) {
+  let best = { d: Infinity, along: 0 };
+  const sc = kmScale(my);
+  for (let i = 1; i < ch.pts.length; i++) {
+    const [ax, ay] = ch.pts[i - 1], [bx, by] = ch.pts[i], dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+    let t = L2 ? ((mx - ax) * dx + (my - ay) * dy) / L2 : 0; t = Math.max(0, Math.min(1, t));
+    const d = Math.hypot(mx - ax - t * dx, my - ay - t * dy) * sc;
+    if (d < best.d) best = { d, along: ch.cum[i - 1] + t * (ch.cum[i] - ch.cum[i - 1]) };
+  }
+  return best;
+}
+function pointAt(ch, km) {
+  for (let i = 1; i < ch.pts.length; i++) {
+    if (ch.cum[i] >= km || i === ch.pts.length - 1) {
+      const seg = ch.cum[i] - ch.cum[i - 1], t = seg ? Math.max(0, Math.min(1, (km - ch.cum[i - 1]) / seg)) : 0;
+      const [ax, ay] = ch.pts[i - 1], [bx, by] = ch.pts[i], dx = bx - ax, dy = by - ay, d = Math.hypot(dx, dy) || 1;
+      return { p: [ax + dx * t, ay + dy * t], n: [-dy / d, dx / d] };
+    }
+  }
+  return { p: ch.pts[0], n: [0, -1] };
+}
+// N05の路線：区間をつないで「ひと続きの線」にし、駅を乗せる
+const kmCache = new Map();
+function groupChains(g) {
+  const near = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]) * kmScale(a[1]) < 0.2;
+  const segs = g.pieces.map(i => S.pieces[i]).filter(p => p.k !== 1).map(p => Array.from(p.mx, (x, i) => [x, p.my[i]]));
+  const chains = [];
+  while (segs.length) {
+    let ch = segs.shift(), grown = true;
+    while (grown) {
+      grown = false;
+      for (let i = 0; i < segs.length; i++) {
+        const s = segs[i], h = ch[0], t = ch[ch.length - 1], s0 = s[0], s1 = s[s.length - 1];
+        if (near(t, s0)) ch = ch.concat(s.slice(1));
+        else if (near(t, s1)) ch = ch.concat(s.slice().reverse().slice(1));
+        else if (near(h, s1)) ch = s.slice(0, -1).concat(ch);
+        else if (near(h, s0)) ch = s.slice().reverse().slice(0, -1).concat(ch);
+        else continue;
+        segs.splice(i, 1); grown = true; break;
+      }
+    }
+    // 起点：ほかの路線の駅とつながっている端（分岐駅）を起点にする
+    const score = e => S.stations.filter(st => st.g !== g.i && Math.hypot(st.mx - e[0], st.my - e[1]) * kmScale(e[1]) < 0.3).length;
+    if (score(ch[ch.length - 1]) > score(ch[0])) ch.reverse();
+    chains.push(makeChain(ch));
+  }
+  return chains;
+}
+function kmStopsGroup(g, flip) {
+  const key = g.i + (flip ? 'f' : '');
+  if (kmCache.has(key)) return kmCache.get(key);
+  const chains = groupChains(g);
+  const stops = [];
+  for (const si of g.stations) {
+    const st = S.stations[si];
+    if (st.k === 1) continue;
+    let best = null;
+    chains.forEach((ch, ci) => { const r = projectOn(ch, st.mx, st.my); if (!best || r.d < best.d) best = { ...r, ci }; });
+    if (!best || best.d > 0.6) continue;
+    const ch = chains[best.ci];
+    stops.push({ st, si, ci: best.ci, along: flip ? ch.total - best.along : best.along });
+  }
+  // 線の端にほかの路線の駅（分岐駅）があれば、その駅も起点・終点として入れる
+  chains.forEach((ch, ci) => {
+    for (const [e, raw] of [[ch.pts[0], 0], [ch.pts[ch.pts.length - 1], ch.total]]) {
+      const along = flip ? ch.total - raw : raw;
+      if (stops.some(x => x.ci === ci && Math.abs(x.along - along) < 0.3)) continue;
+      let best = null, bd = 0.3;
+      S.stations.forEach((st, si) => {
+        if (st.g === g.i || st.k === 1) return;
+        const d = Math.hypot(st.mx - e[0], st.my - e[1]) * kmScale(e[1]);
+        if (d < bd) { bd = d; best = { st, si }; }
+      });
+      if (best) stops.push({ st: best.st, si: best.si, ci, along, junction: true });
+    }
+  });
+  stops.sort((a, b) => a.ci - b.ci || a.along - b.along);
+  const res = { chains, stops, flip };
+  kmCache.set(key, res);
+  return res;
+}
+function kmStopsDrawn(l) {
+  if (l.pts.length < 2) return null;
+  const c = curveOf(l), ch = makeChain(c.pts), stops = [];
+  l.pts.forEach((p, i) => {
+    if (p.kind !== 'station') return;
+    const idx = i < c.seg.length ? c.seg[i] : c.pts.length - 1;
+    stops.push({ p, ci: 0, along: ch.cum[idx] });
+  });
+  return { chains: [ch], stops, flip: false };
+}
+const fmtKm = v => v.toFixed(1) + 'km';
+// 地図に距離を書く。o.screen のときはドラッグ・クリックできるように箱を記録
+function drawKmLabels(ctx, V, o, R, prefix, stopOk, nameOf) {
+  if (!R) return;
+  const k = V.k, c = V.cull, mode = cfg.kmMode;
+  const stops = R.stops.filter(stopOk);
+  const inV = (mx, my) => mx >= c[0] && mx <= c[2] && my >= c[1] && my <= c[3];
+  const put = (key, txt, x, y, def, name, align) => {
+    const ls = S.lstyle[key] || {};
+    if (ls.hide && !o.screen) return;
+    const off = S.offsets[key] || def;
+    const b = textBox(ctx, txt, x + off.dx * k, y + off.dy * k, ls.size || cfg.kmSize, k, align, ls.color || '#555555', ls.halo || '#ffffff', ls.bold ?? false, ls.hide ? 0.28 : 1);
+    if (o.screen) labelBoxes.push({ key, ...b, def, name, defSize: cfg.kmSize, defColor: '#555555' });
+  };
+  if (mode === 'seg' || mode === 'both') {
+    for (let i = 1; i < stops.length; i++) {
+      const a = stops[i - 1], b = stops[i];
+      if (a.ci !== b.ci) continue;
+      const ch = R.chains[a.ci];
+      const mid = (a.along + b.along) / 2, at = pointAt(ch, R.flip ? ch.total - mid : mid);
+      if (!inV(at.p[0], at.p[1])) continue;
+      const [x, y] = V.P(at.p[0], at.p[1]);
+      const off = 9 + cfg.kmSize * 0.6;
+      put(`${prefix}:${nameOf(a)}>${nameOf(b)}`, fmtKm(Math.abs(b.along - a.along)), x, y, { dx: at.n[0] * off, dy: at.n[1] * off }, `${nameOf(a)}–${nameOf(b)}の距離`, 'center');
+    }
+  }
+  if (mode === 'cum' || mode === 'both') {
+    for (const s of stops) {
+      if (s.junction) continue;
+      const [mx, my] = s.st ? [s.st.mx, s.st.my] : toMerc(s.p.lng, s.p.lat);
+      if (!inV(mx, my)) continue;
+      const [x, y] = V.P(mx, my);
+      put(`${prefix}@${nameOf(s)}`, fmtKm(s.along), x, y, { dx: cfg.stR + 4, dy: cfg.stSize * 0.6 + cfg.kmSize * 0.7 }, `${nameOf(s)}の累計距離`, 'left');
+    }
+  }
+}
+function drawKm(ctx, V, o, sel) {
+  if (!cfg.kmShow) return;
+  for (const [gi, s] of sel) {
+    const g = S.groups[gi];
+    const ok = x => (x.st.k === 0 ? cfg.stCur : cfg.stClosed);
+    drawKmLabels(ctx, V, o, kmStopsGroup(g, !!s.flip), 'km:' + gkey(g), ok, x => x.st.n);
+  }
+  for (const l of visibleDrawn()) drawKmLabels(ctx, V, o, kmStopsDrawn(l), 'dkm:' + l.id, () => true, x => x.p.name || '?');
+}
 
 /* ---------- 書き出し ---------- */
 function loadImg(url) {
@@ -1993,7 +2705,7 @@ bindCfg();
 setBase(); setOpacity();
 ensureFont(cfg.fontLabel); ensureFont(cfg.fontTitle);
 $('dExport').addEventListener('toggle', () => { placeFrame(); redraw(); });
-resizeOv(); renderSel(); renderSnaps(); renderHidden(); syncView();
+resizeOv(); renderSel(); renderSnaps(); renderHidden(); syncView(); renderDrawList();
 setMode(mode);
 autoLoad();
 </script>
