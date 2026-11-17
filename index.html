@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>廃線かさね地図 v0.4</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{--bg:#f6f4ef;--ink:#222;--sub:#6b665c;--line:#ddd6c8;--acc:#c8322b;--acc2:#1f5fbf}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:'Hiragino Sans','Noto Sans JP','Yu Gothic UI','Meiryo',sans-serif;color:var(--ink);font-size:13px}
+#app{display:flex;height:100vh}
+#side{width:330px;min-width:330px;background:var(--bg);border-right:1px solid var(--line);overflow-y:auto;padding:0 0 40px}
+#side header{padding:12px 14px 8px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:5}
+#side h1{font-size:17px;margin:0;letter-spacing:.04em}
+#side h1 small{font-weight:normal;color:var(--sub);font-size:11px}
+#status{font-size:11px;color:var(--sub);margin-top:3px}
+details{border-bottom:1px solid var(--line)}
+summary{padding:9px 14px;font-weight:bold;cursor:pointer;user-select:none}
+.box{padding:2px 14px 12px}
+label.row{display:flex;align-items:center;gap:6px;margin:5px 0}
+.row2{display:flex;align-items:center;gap:6px;margin:5px 0;flex-wrap:wrap}
+input[type=text],input[type=search],select,textarea{font:inherit;padding:4px 6px;border:1px solid #c9c2b4;border-radius:4px;background:#fff}
+input[type=number]{width:58px;font:inherit;padding:3px 4px;border:1px solid #c9c2b4;border-radius:4px}
+input[type=color]{width:34px;height:24px;padding:0;border:1px solid #c9c2b4;border-radius:4px;background:#fff}
+button{font:inherit;padding:5px 10px;border:1px solid #b9b1a2;border-radius:5px;background:#fff;cursor:pointer}
+button:hover{background:#f0ece3}
+button.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+button.pri:hover{background:#a92820}
+button:disabled{opacity:.45;cursor:default}
+.hint{font-size:11px;color:var(--sub);line-height:1.5}
+#drop{border:2px dashed #b9b1a2;border-radius:8px;padding:12px;text-align:center;background:#fff;margin:6px 0;line-height:1.6}
+#drop.over{border-color:var(--acc);background:#fff4f2}
+#q{width:100%}
+#res,#selList{margin-top:6px;max-height:260px;overflow-y:auto}
+.item{display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:5px;background:#fff;border:1px solid #ebe5d9;margin-bottom:4px}
+.item.click{cursor:pointer}
+.item.click:hover{border-color:var(--acc)}
+.item .nm{font-weight:bold}
+.item .co{font-size:11px;color:var(--sub)}
+.item .grow{flex:1;min-width:0}
+.tag{display:inline-block;font-size:10px;padding:0 5px;border-radius:8px;margin-left:3px;color:#fff;vertical-align:1px}
+.t0{background:var(--acc2)}.t1{background:#8a8a8a}.t2{background:var(--acc)}
+.x{border:none;background:none;font-size:16px;color:#999;padding:0 4px}
+.x:hover{color:var(--acc);background:none}
+.styRow{display:grid;grid-template-columns:44px 34px 1fr;gap:4px 6px;align-items:center;margin:6px 0;padding:6px;background:#fff;border:1px solid #ebe5d9;border-radius:5px}
+.styRow .sub{grid-column:2/4;display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px}
+main{flex:1;position:relative;overflow:hidden}
+#map{position:absolute;inset:0;background:#fff}
+#frame.off{display:none}
+.modeSw{display:flex;margin-top:8px;border:1px solid #b9b1a2;border-radius:6px;overflow:hidden}
+.modeSw button{flex:1;border:none;border-radius:0;padding:6px 0;background:#fff;font-weight:bold;color:var(--sub)}
+.modeSw button+button{border-left:1px solid #b9b1a2}
+.modeSw button.on{background:var(--ink);color:#fff}
+body.mode-view .makeOnly,body.mode-make .viewOnly{display:none}
+#infoBox .ttl{font-size:16px;font-weight:bold}
+#infoBox table{width:100%;border-collapse:collapse;font-size:12px;margin:6px 0}
+#infoBox td{padding:2px 4px;vertical-align:top}
+#infoBox td:first-child{color:var(--sub);white-space:nowrap;width:56px}
+#infoBox .sts{max-height:220px;overflow-y:auto;font-size:12px;line-height:1.7;background:#fff;border:1px solid #ebe5d9;border-radius:5px;padding:4px 8px;margin:4px 0}
+#infoBox .sts a{color:inherit;text-decoration:none;cursor:pointer}
+#infoBox .sts a:hover{color:var(--acc);text-decoration:underline}
+#infoBox .sts .cl{color:var(--acc)}
+.lg{display:flex;align-items:center;gap:6px;font-size:12px;margin:2px 0}
+.lg i{display:inline-block;width:26px;height:5px;border-radius:3px}
+#lpop{position:absolute;z-index:700;background:#fff;border:1px solid #c9c2b4;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.2);padding:8px 10px;font-size:12px;display:none;width:210px}
+#lpop .hd{display:flex;align-items:center;font-weight:bold;margin-bottom:4px}
+#lpop .hd span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#lpop .r{display:flex;align-items:center;gap:6px;margin:5px 0}
+#lpop .r b{width:52px;font-weight:normal;color:var(--sub)}
+#lpop button{padding:2px 8px}
+.snap{display:flex;align-items:center;gap:4px;padding:5px 6px;border-radius:5px;background:#fff;border:1px solid #ebe5d9;margin-bottom:4px}
+.snap .nm{flex:1;min-width:0;cursor:pointer}
+.snap .nm b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snap .nm:hover b{color:var(--acc)}
+.snap .co{font-size:10px;color:var(--sub)}
+#snapList{margin:6px 0;max-height:220px;overflow-y:auto}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:rgba(20,20,20,.9);color:#fff;padding:8px 14px;border-radius:6px;font-size:13px;z-index:3000;display:none;max-width:80vw}
+#ov{position:absolute;left:0;top:0;pointer-events:none;z-index:500}
+#frame{position:absolute;pointer-events:none;z-index:510;outline:2px dashed rgba(0,0,0,.55);box-shadow:0 0 0 9999px rgba(30,30,30,.28)}
+#frame.full{outline:none;box-shadow:none}
+#tip{position:absolute;z-index:600;pointer-events:none;background:rgba(20,20,20,.85);color:#fff;font-size:12px;padding:4px 8px;border-radius:4px;display:none;white-space:nowrap}
+main.lh .leaflet-container,main.lh .leaflet-grab,main.lh .leaflet-interactive{cursor:move}
+main.ph .leaflet-container,main.ph .leaflet-grab{cursor:pointer}
+.ovl{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:2000;display:none;align-items:center;justify-content:center}
+#modal{z-index:2100}
+.ovl .card{background:#fff;border-radius:10px;width:min(640px,94vw);max-height:90vh;overflow:auto;padding:16px 18px}
+.info{background:var(--bg);border-radius:6px;padding:8px 10px;font-size:12px;line-height:1.7;margin-bottom:6px}
+.ovl h2{font-size:16px;margin:0 0 8px}
+#modal table{width:100%;border-collapse:collapse;font-size:12px}
+#modal td{padding:3px 4px;border-bottom:1px solid #eee;vertical-align:middle}
+#modal td:first-child{white-space:nowrap;font-weight:bold;width:90px}
+#modal select{max-width:100%}
+#log{background:#222;color:#cfc;font:11px/1.5 monospace;padding:8px;border-radius:6px;height:120px;overflow:auto;white-space:pre-wrap;margin-top:8px}
+.legend-note{font-size:11px;color:var(--sub)}
+</style>
+</head>
+<body>
+<div id="app">
+<aside id="side">
+  <header>
+    <h1>廃線かさね地図 <small>v0.4</small></h1>
+    <div id="status">データ読み込み中…</div>
+    <div class="modeSw"><button data-mode="view">見るモード</button><button data-mode="make">作るモード</button></div>
+  </header>
+
+
+  <details open>
+    <summary>路線を探す</summary>
+    <div class="box">
+      <input type="search" id="q" placeholder="路線名・会社名・駅名（例：倉吉、丸ノ内）">
+      <div id="res"></div>
+      <div class="hint" id="qHint">地図上のうすい線をクリックしても追加できる（赤っぽいのが廃線）。</div>
+    </div>
+  </details>
+
+  <details open class="viewOnly">
+    <summary>路線の情報</summary>
+    <div class="box"><div id="infoBox"><div class="hint">地図の線をクリックすると、ここに路線の情報が出る。</div></div></div>
+  </details>
+
+  <details open class="viewOnly">
+    <summary>年で見る</summary>
+    <div class="box">
+      <label class="row"><input type="checkbox" id="vYearOn">その年に走っていた路線だけ出す</label>
+      <div class="row2"><button id="vPlay" style="width:44px">▶</button><input type="range" id="vYear" min="1950" max="2025" step="1" style="flex:1"><b id="vYearLbl" style="width:56px;text-align:right;font-size:15px"></b></div>
+      <div class="hint">▶で1950年から順に動く。データは1950年以降のもの（それより前に消えた線は入っていない）。</div>
+    </div>
+  </details>
+
+  <details open class="viewOnly">
+    <summary>表示</summary>
+    <div class="box">
+      <label class="row"><input type="checkbox" id="vCur">現役の路線もうすく出す</label>
+      <label class="row"><input type="checkbox" id="vOld">旧線（付け替え前の線）も出す</label>
+      <label class="row"><input type="checkbox" id="vDecade">廃止の年代で色分け</label>
+      <div id="vLegend"></div>
+    </div>
+  </details>
+
+  <details class="makeOnly" open>
+    <summary>えらんだ路線</summary>
+    <div class="box">
+      <div id="selList"></div>
+      <div class="row2">
+        <button id="zoomSel">えらんだ路線に移動</button>
+        <button id="clearSel">全部はずす</button>
+      </div>
+    </div>
+  </details>
+
+  <details open>
+    <summary>背景地図</summary>
+    <div class="box">
+      <select id="base" data-cfg="base" style="width:100%"></select>
+      <div class="row2">地図の濃さ <input type="range" data-cfg="baseOpacity" min="0.1" max="1" step="0.05" style="flex:1"><span id="opVal" style="width:36px;text-align:right"></span></div>
+      <label class="row"><input type="checkbox" data-cfg="showOthers">えらんでない路線もうすく表示</label>
+      <label class="row"><input type="checkbox" data-cfg="othersInExport">うすい線も画像に入れる</label>
+      <div class="hint">昔の空中写真はズーム10以上で表示（範囲外は淡色地図）。白地図はズーム14より寄ると少しぼやける。</div>
+    </div>
+  </details>
+
+  <details class="makeOnly">
+    <summary>線のスタイル</summary>
+    <div class="box">
+      <div id="styBox"></div>
+      <label class="row"><input type="checkbox" data-cfg="showOld">旧線（付け替え前の線）を表示</label>
+    </div>
+  </details>
+
+  <details class="makeOnly">
+    <summary>駅・ラベル</summary>
+    <div class="box">
+      <label class="row"><input type="checkbox" data-cfg="stCur">現役の駅</label>
+      <label class="row"><input type="checkbox" data-cfg="stClosed">廃駅・旧線の駅</label>
+      <label class="row"><input type="checkbox" data-cfg="stLabel">駅名を表示</label>
+      <div class="row2">書体 <select data-cfg="fontLabel" class="fontSel" style="flex:1"></select></div>
+      <label class="row"><input type="checkbox" data-cfg="bold">太字</label>
+      <div class="row2">駅名の大きさ <input type="number" data-cfg="stSize" min="8" max="40"> 駅の丸 <input type="number" data-cfg="stR" min="2" max="12" step="0.5"></div>
+      <div class="row2">駅名に年を添える
+        <select data-cfg="stYear"><option value="none">なし</option><option value="closed">廃駅だけ</option><option value="all">すべて</option></select>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--line)">
+      <label class="row"><input type="checkbox" data-cfg="lnLabel">路線名の注記</label>
+      <label class="row"><input type="checkbox" data-cfg="lnYear">注記に「○年廃止」を添える</label>
+      <div class="row2">注記の大きさ <input type="number" data-cfg="lnSize" min="8" max="60"></div>
+      <div class="row2"><button id="resetLabels">文字を全部もとに戻す</button></div>
+      <div id="hiddenInfo" class="hint"></div>
+      <div class="hint">駅名・注記はドラッグで動かせる。クリックすると、その文字だけ大きさ・色を変えたり、かくしたりできる。「全部もとに戻す」は位置・大きさ・書体・色など文字まわりを全部はじめに戻す。</div>
+    </div>
+  </details>
+
+  <details class="makeOnly" open>
+    <summary>おぼえとく・作業ファイル</summary>
+    <div class="box">
+      <div class="row2"><input type="text" id="snapName" style="flex:1" placeholder="名前（空なら自動）"><button class="pri" id="snapSave">今の状態をおぼえとく</button></div>
+      <div id="snapList"></div>
+      <div class="row2">
+        <button id="fileSave">作業ファイルに保存</button>
+        <button id="fileOpen">作業ファイルを開く</button>
+        <input type="file" id="projFile" accept=".json" style="display:none">
+      </div>
+      <div class="hint">「おぼえとく」はこのブラウザの中にしまう。別のパソコンで使う・バックアップするときは作業ファイルに保存。作業ファイルには、おぼえた状態が全部入る。</div>
+    </div>
+  </details>
+
+  <details id="dExport" class="makeOnly">
+    <summary>画像の書き出し</summary>
+    <div class="box">
+      <div class="row2">比率
+        <select data-cfg="aspect"><option value="view">表示範囲そのまま</option><option value="16:9">16:9</option><option value="3:2">3:2</option><option value="4:3">4:3</option><option value="1:1">1:1</option><option value="4:5">4:5（縦）</option></select>
+        幅 <select data-cfg="outW"><option value="1200">1200px</option><option value="1600">1600px</option><option value="2000">2000px</option><option value="2400">2400px</option><option value="3200">3200px</option></select>
+      </div>
+      <div class="row2">タイトル <input type="text" data-cfg="title" style="flex:1" placeholder="（なしでもOK）"></div>
+      <div class="row2">タイトルの大きさ <input type="number" data-cfg="titleSize" min="10" max="80"></div>
+      <div class="row2">タイトルの書体 <select data-cfg="fontTitle" class="fontSel" style="flex:1"></select></div>
+      <label class="row"><input type="checkbox" data-cfg="legend">凡例を入れる</label>
+      <hr style="border:none;border-top:1px solid var(--line)">
+      <label class="row"><input type="checkbox" data-cfg="attrAuto">出典を自動で書く</label>
+      <textarea id="attrText" data-cfg="attrText" rows="3" style="width:100%"></textarea>
+      <div class="row2">出典の位置
+        <select data-cfg="attrPos"><option value="br">右下</option><option value="bl">左下</option><option value="tr">右上</option><option value="tl">左上</option></select>
+        大きさ <input type="number" data-cfg="attrSize" min="8" max="30">
+      </div>
+      <div class="row2" style="margin-top:10px"><button class="pri" id="exportBtn">PNGで保存</button></div>
+      <div class="hint">この欄を開いている間だけ、地図に点線の枠が出る。枠の中が画像になる。</div>
+    </div>
+  </details>
+  <div class="box" style="padding-top:14px">
+    <button id="setupBtn" style="width:100%">⚙ データのセットアップ</button>
+  </div>
+</aside>
+<main id="mainEl">
+  <div id="map"></div>
+  <canvas id="ov"></canvas>
+  <div id="frame"></div>
+  <div id="tip"></div>
+  <div id="lpop">
+    <div class="hd"><span id="lpName"></span><button class="x" id="lpClose">×</button></div>
+    <div class="r"><b>大きさ</b><button id="lpMinus">−</button><span id="lpSize" style="width:28px;text-align:center"></span><button id="lpPlus">＋</button></div>
+    <div class="r"><b>文字の色</b><input type="color" id="lpColor"></div>
+    <div class="r"><b>ふちの色</b><input type="color" id="lpHalo"></div>
+    <div class="r"><b>太字</b><input type="checkbox" id="lpBold"></div>
+    <div class="r"><button id="lpHide"></button><button id="lpReset">この文字だけ戻す</button></div>
+  </div>
+</main>
+</div>
+<div id="toast"></div>
+
+<div id="setup" class="ovl"><div class="card">
+  <div style="display:flex;align-items:center"><h2 style="flex:1">データのセットアップ</h2><button class="x" id="setupClose" style="font-size:22px">×</button></div>
+  <div id="dataInfo" class="info"></div>
+  <div id="drop">国土数値情報「鉄道時系列（N05）」の<b>zip</b>（例：N05-25_GML.zip）<br>または変換済みの <b>rail_n05.json</b> をここにドロップ
+    <div style="margin-top:6px"><button id="pickBtn">ファイルを選ぶ</button></div>
+    <input type="file" id="file" accept=".zip,.json,.geojson" style="display:none">
+  </div>
+  <div class="row2"><button class="pri" id="saveJson" disabled>rail_n05.json を保存</button></div>
+  <div class="hint">
+    手順：①国土数値情報のサイトで「鉄道時系列」のzipをダウンロード → ②解凍せずにここへドロップして「変換する」→ ③「rail_n05.json を保存」→ ④そのファイルを index.html と同じフォルダ（GitHub）に置く。<br>以後はページを開くだけで自動で読み込むので、ここを開く必要はない。データを新しい年度に入れ替えるときだけ使う。
+  </div>
+</div></div>
+
+<div id="modal" class="ovl"><div class="card">
+  <h2>N05データの変換</h2>
+  <div class="hint" id="mSrc"></div>
+  <table>
+    <tr><td>路線ファイル</td><td><select id="mLineFile"></select></td></tr>
+    <tr><td>駅ファイル</td><td><select id="mStFile"></select></td></tr>
+  </table>
+  <p class="hint">属性の対応（たいていは自動でOK。例の値を見てずれていたら直す）</p>
+  <table id="mFields"></table>
+  <div class="row2" style="margin-top:10px">
+    <button class="pri" id="mGo">変換する</button>
+    <button id="mCancel">やめる</button>
+  </div>
+  <div id="log"></div>
+</div></div>
+
+<script>
+/* ===== 国土数値情報 N05（鉄道時系列）→ 軽量JSON 変換 ===== */
+const CONV = (() => {
+  const tick = () => new Promise(r => setTimeout(r, 0));
+  const kxy = lat => [111320 * Math.cos(lat * Math.PI / 180), 110574];
+
+  function dSeg(px, py, ax, ay, bx, by, kx, ky) {
+    const x = (px - ax) * kx, y = (py - ay) * ky, dx = (bx - ax) * kx, dy = (by - ay) * ky;
+    const L = dx * dx + dy * dy;
+    let t = L ? (x * dx + y * dy) / L : 0;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    const ex = x - t * dx, ey = y - t * dy;
+    return Math.sqrt(ex * ex + ey * ey);
+  }
+  function lenM(pts) {
+    let L = 0;
+    for (let i = 1; i < pts.length; i++) {
+      const [kx, ky] = kxy(pts[i][1]);
+      L += Math.hypot((pts[i][0] - pts[i - 1][0]) * kx, (pts[i][1] - pts[i - 1][1]) * ky);
+    }
+    return L;
+  }
+  function densify(pts, maxM) {
+    const out = [pts[0]];
+    for (let i = 1; i < pts.length; i++) {
+      const a = pts[i - 1], b = pts[i];
+      const [kx, ky] = kxy(a[1]);
+      const d = Math.hypot((b[0] - a[0]) * kx, (b[1] - a[1]) * ky);
+      const n = Math.ceil(d / maxM);
+      for (let j = 1; j < n; j++) out.push([a[0] + (b[0] - a[0]) * j / n, a[1] + (b[1] - a[1]) * j / n]);
+      out.push(b);
+    }
+    return out;
+  }
+  function simplify(pts, tolM) {
+    if (pts.length < 3) return pts;
+    const [kx, ky] = kxy(pts[0][1]);
+    const keep = new Uint8Array(pts.length);
+    keep[0] = keep[pts.length - 1] = 1;
+    const st = [[0, pts.length - 1]];
+    while (st.length) {
+      const [a, b] = st.pop();
+      let md = 0, mi = -1;
+      for (let i = a + 1; i < b; i++) {
+        const d = dSeg(pts[i][0], pts[i][1], pts[a][0], pts[a][1], pts[b][0], pts[b][1], kx, ky);
+        if (d > md) { md = d; mi = i; }
+      }
+      if (md > tolM) { keep[mi] = 1; st.push([a, mi], [mi, b]); }
+    }
+    return pts.filter((_, i) => keep[i]);
+  }
+
+  // 線分グリッド索引
+  class Idx {
+    constructor(cell) { this.c = cell; this.m = new Map(); this.it = []; }
+    key(ix, iy) { return ix * 1000000 + iy; }
+    add(tag, ax, ay, bx, by) {
+      const id = this.it.length, c = this.c;
+      this.it.push([tag, ax, ay, bx, by]);
+      const x0 = Math.floor(Math.min(ax, bx) / c), x1 = Math.floor(Math.max(ax, bx) / c);
+      const y0 = Math.floor(Math.min(ay, by) / c), y1 = Math.floor(Math.max(ay, by) / c);
+      for (let ix = x0; ix <= x1; ix++) for (let iy = y0; iy <= y1; iy++) {
+        const k = this.key(ix, iy);
+        let a = this.m.get(k);
+        if (!a) { a = []; this.m.set(k, a); }
+        a.push(id);
+      }
+    }
+    addLine(tag, pts) { for (let i = 1; i < pts.length; i++) this.add(tag, pts[i - 1][0], pts[i - 1][1], pts[i][0], pts[i][1]); }
+    near(px, py, rM, pred) {
+      const [kx, ky] = kxy(py), c = this.c;
+      const rx = Math.ceil(rM / kx / c), ry = Math.ceil(rM / ky / c);
+      const cx = Math.floor(px / c), cy = Math.floor(py / c);
+      let best = Infinity, bt = null;
+      for (let ix = cx - rx; ix <= cx + rx; ix++) for (let iy = cy - ry; iy <= cy + ry; iy++) {
+        const a = this.m.get(this.key(ix, iy));
+        if (!a) continue;
+        for (const id of a) {
+          const it = this.it[id];
+          if (pred && !pred(it[0])) continue;
+          const d = dSeg(px, py, it[1], it[2], it[3], it[4], kx, ky);
+          if (d < best) { best = d; bt = it[0]; }
+        }
+      }
+      return { d: best, tag: bt };
+    }
+  }
+
+  /* ---------- shp / dbf / geojson 読み込み ---------- */
+  function parseShp(buf) {
+    const dv = new DataView(buf), out = [];
+    let pos = 100;
+    while (pos + 12 <= buf.byteLength) {
+      const clen = dv.getInt32(pos + 4, false) * 2, st = pos + 8;
+      const type = dv.getInt32(st, true);
+      let g = null;
+      if (type === 1 || type === 11 || type === 21) {
+        g = { t: 'pt', c: [dv.getFloat64(st + 4, true), dv.getFloat64(st + 12, true)] };
+      } else if ([3, 13, 23, 5, 15, 25].includes(type)) {
+        const np = dv.getInt32(st + 36, true), npt = dv.getInt32(st + 40, true);
+        const parts = [];
+        for (let i = 0; i < np; i++) parts.push(dv.getInt32(st + 44 + i * 4, true));
+        const p0 = st + 44 + np * 4, lines = [];
+        for (let i = 0; i < np; i++) {
+          const a = parts[i], b = i + 1 < np ? parts[i + 1] : npt, arr = [];
+          for (let k = a; k < b; k++) arr.push([dv.getFloat64(p0 + k * 16, true), dv.getFloat64(p0 + k * 16 + 8, true)]);
+          lines.push(arr);
+        }
+        g = { t: 'ln', c: lines };
+      } else if (type === 8 || type === 18 || type === 28) {
+        const n = dv.getInt32(st + 36, true);
+        if (n > 0) g = { t: 'pt', c: [dv.getFloat64(st + 40, true), dv.getFloat64(st + 48, true)] };
+      }
+      out.push(g);
+      pos = st + clen;
+    }
+    return out;
+  }
+  function parseDbf(buf, enc) {
+    const u8 = new Uint8Array(buf), dv = new DataView(buf);
+    const n = dv.getUint32(4, true), hlen = dv.getUint16(8, true), rlen = dv.getUint16(10, true);
+    const fields = [];
+    for (let p = 32; p < hlen - 1 && u8[p] !== 0x0D; p += 32) {
+      let name = '';
+      for (let i = 0; i < 11 && u8[p + i]; i++) name += String.fromCharCode(u8[p + i]);
+      fields.push({ name: name.trim(), len: u8[p + 16] });
+    }
+    const utf = new TextDecoder('utf-8', { fatal: true });
+    let sj = null;
+    try { sj = new TextDecoder('shift_jis'); } catch (e) { sj = new TextDecoder('utf-8'); }
+    let mode = enc || 'auto';
+    const dec = b => {
+      if (mode === 'shift_jis') return sj.decode(b);
+      try { return utf.decode(b); } catch (e) { if (mode === 'auto') mode = 'shift_jis'; return sj.decode(b); }
+    };
+    const rows = [];
+    for (let r = 0; r < n; r++) {
+      let off = hlen + r * rlen + 1;
+      const o = {};
+      for (const f of fields) {
+        let e = off + f.len;
+        while (e > off && (u8[e - 1] === 0x20 || u8[e - 1] === 0)) e--;
+        let s = off;
+        while (s < e && u8[s] === 0x20) s++;
+        o[f.name] = dec(u8.subarray(s, e));
+        off += f.len;
+      }
+      rows.push(o);
+    }
+    return { fields: fields.map(f => f.name), rows };
+  }
+  function fromGeoJSON(obj) {
+    const out = [];
+    for (const f of obj.features || []) {
+      const g = f.geometry; if (!g) continue;
+      let geo = null;
+      if (g.type === 'Point') geo = { t: 'pt', c: g.coordinates };
+      else if (g.type === 'MultiPoint') geo = { t: 'pt', c: g.coordinates[0] };
+      else if (g.type === 'LineString') geo = { t: 'ln', c: [g.coordinates] };
+      else if (g.type === 'MultiLineString') geo = { t: 'ln', c: g.coordinates };
+      out.push({ p: f.properties || {}, g: geo });
+    }
+    return out;
+  }
+
+  /* ---------- 属性名の推定 ---------- */
+  function guessMap(feats, isSt) {
+    const fields = feats.length ? Object.keys(feats[0].p) : [];
+    const has = f => fields.includes(f) ? f : '';
+    const m = { typ: has('N05_001'), lin: has('N05_002'), opc: has('N05_003'), usb: has('N05_004'), s: has('N05_005b'), e: has('N05_005e'), rfid: has('N05_006') };
+    if (isSt) m.stn = has('N05_011');
+    const smp = feats.slice(0, 800).map(f => f.p);
+    const st = {};
+    for (const k of fields) {
+      const v = smp.map(p => String(p[k] ?? '').trim()).filter(x => x !== '');
+      const num = v.filter(x => /^\d+$/.test(x));
+      st[k] = {
+        n9999: v.filter(x => x === '9999').length,
+        num: num.length / (v.length || 1),
+        y: num.filter(x => +x >= 1800 && +x <= 2100).length / (v.length || 1),
+        small: num.filter(x => +x >= 1 && +x <= 5).length / (v.length || 1),
+        eb: v.filter(x => /^EB0\d_/.test(x)).length / (v.length || 1),
+        dist: new Set(v).size, text: v.length && num.length / v.length < 0.2,
+        min: num.length ? Math.min(...num.map(Number)) : 0
+      };
+    }
+    const used = new Set(Object.values(m).filter(Boolean));
+    const pick = (cond, score) => {
+      const c = fields.filter(k => !used.has(k) && cond(st[k])).sort((a, b) => score(st[b]) - score(st[a]))[0] || '';
+      if (c) used.add(c);
+      return c;
+    };
+    if (!m.e) m.e = pick(s => s.n9999 > 0, s => s.n9999);
+    if (!m.rfid) m.rfid = pick(s => s.eb > 0.5, s => s.eb);
+    if (!m.typ) m.typ = pick(s => s.small > 0.9, s => s.small);
+    if (!m.s) m.s = pick(s => s.y > 0.8 && s.min >= 999, s => s.y);
+    if (!m.usb) m.usb = pick(s => s.y > 0.5, s => s.y);
+    const texts = fields.filter(k => !used.has(k) && st[k].text);
+    if (isSt && !m.stn) { m.stn = texts.sort((a, b) => st[b].dist - st[a].dist)[0] || ''; used.add(m.stn); }
+    const rest = fields.filter(k => !used.has(k) && st[k].text);
+    if (!m.lin) { m.lin = rest[0] || ''; used.add(m.lin); }
+    if (!m.opc) { m.opc = fields.filter(k => !used.has(k) && st[k].text)[0] || ''; }
+    return { fields, m };
+  }
+
+  /* ---------- 本体 ---------- */
+  async function convert(LF, SF, m, ms, log = () => {}) {
+    const I = v => { const n = parseInt(v, 10); return isNaN(n) ? 999 : n; };
+    const T = v => v == null ? '' : String(v).trim();
+    const valid = y => y > 1000 && y < 3000;
+
+    // 1) 路線を部品に分解
+    const F = [];
+    for (const f of LF) {
+      if (!f.g || f.g.t !== 'ln') continue;
+      const p = f.p;
+      const b = { lin: T(p[m.lin]), opc: T(p[m.opc]), typ: I(p[m.typ]), usb: I(p[m.usb]), s: I(p[m.s]), e: I(p[m.e]), rf: T(p[m.rfid]) };
+      for (const part of f.g.c) if (part && part.length >= 2) F.push({ ...b, pts: part });
+    }
+    log(`路線レコード ${F.length} 件を読み込み`);
+    const idx = new Idx(0.002);
+    F.forEach((f, i) => idx.addLine(i, f.pts));
+    const alive = (f, Y) => f.s <= Y && f.e >= Y && f.e !== 999;
+    const linP = new Map(), rfP = new Map();
+    for (const f of F) {
+      if (f.lin) { if (!linP.has(f.lin)) linP.set(f.lin, []); linP.get(f.lin).push(f); }
+      if (f.rf) { if (!rfP.has(f.rf)) rfP.set(f.rf, []); rfP.get(f.rf).push(f); }
+    }
+    const anyAlive = (mp, key, Y) => !!key && (mp.get(key) || []).some(f => alive(f, Y));
+
+    // 2) 終わった区間を「名前・会社変更／旧線／廃線」に分ける
+    const P = []; // {lin,opc,typ,usb,rf,k,y1,pts}
+    let nRen = 0;
+    for (let fi = 0; fi < F.length; fi++) {
+      const f = F[fi];
+      const meta = { lin: f.lin, opc: f.opc, typ: f.typ, usb: f.usb, rf: f.rf };
+      if (f.e === 9999) { P.push({ ...meta, k: 0, y1: 0, pts: f.pts }); continue; }
+      const Y = f.e === 999 ? null : f.e + 1;
+      const isAlive = g => Y == null ? g.e === 9999 : alive(g, Y);
+      const succ = gi => {
+        if (gi === fi) return false;
+        const g = F[gi];
+        if (!isAlive(g)) return false;
+        return (g.lin && g.lin === f.lin) || (g.rf && g.rf === f.rf) || (Y != null && g.s === Y);
+      };
+      const succAny = gi => gi !== fi && isAlive(F[gi]);
+      const dp = densify(f.pts, 40);
+      const cov = dp.map(([x, y]) => idx.near(x, y, 20, succ).d < 20);
+      let i = 0, made = 0;
+      while (i < dp.length) {
+        if (cov[i]) { i++; continue; }
+        let j = i;
+        while (j + 1 < dp.length && !cov[j + 1]) j++;
+        const run = dp.slice(Math.max(0, i - 1), Math.min(dp.length - 1, j + 1) + 1);
+        if (lenM(run) >= 80) {
+          const a = run[0], b = run[run.length - 1];
+          const nearA = idx.near(a[0], a[1], 150, succAny).d < 150;
+          const nearB = idx.near(b[0], b[1], 150, succAny).d < 150;
+          const linAlive = Y != null && (anyAlive(linP, f.lin, Y) || anyAlive(rfP, f.rf, Y));
+          P.push({ ...meta, k: (nearA && nearB && linAlive) ? 1 : 2, y1: Y || 0, pts: run });
+          made++;
+        }
+        i = j + 1;
+      }
+      if (!made) nRen++;
+      if (fi % 150 === 0) { log(`区間の判定中… ${fi}/${F.length}`); await tick(); }
+    }
+    log(`名前・会社の変更だけの区間 ${nRen} 件を除外`);
+    for (const p of P) p.pts = simplify(p.pts, 2.5);
+
+    // 3) 路線グループ
+    const groups = [], gByKey = new Map();
+    const G = (key, p) => {
+      let g = gByKey.get(key);
+      if (g === undefined) { g = groups.length; groups.push({ n: p.lin, c: p.opc, t: p.typ }); gByKey.set(key, g); }
+      return g;
+    };
+    const curByLin = new Map(), cidx = new Idx(0.01);
+    for (const p of P) if (p.k === 0) {
+      p.g = G('C|' + p.lin + '|' + p.opc, p);
+      if (!curByLin.has(p.lin)) curByLin.set(p.lin, new Set());
+      curByLin.get(p.lin).add(p.g);
+      cidx.addLine(p.g, p.pts);
+    }
+    for (const p of P) if (p.k !== 0) {
+      const cands = curByLin.get(p.lin);
+      let g = null;
+      if (cands) {
+        const a = p.pts[0], b = p.pts[p.pts.length - 1];
+        const r1 = cidx.near(a[0], a[1], 3000, t => cands.has(t)), r2 = cidx.near(b[0], b[1], 3000, t => cands.has(t));
+        const r = r1.d <= r2.d ? r1 : r2;
+        if (r.d < 3000) g = r.tag;
+      }
+      if (g == null) g = G('E|' + p.lin + '|' + p.opc, p);
+      p.g = g;
+    }
+    // 現役のない（全廃）グループ同士で、同じ路線名かつ端がつながるものは合体
+    const par = groups.map((_, i) => i);
+    const fnd = x => par[x] === x ? x : (par[x] = fnd(par[x]));
+    const endsOf = new Map();
+    for (const p of P) if (p.k !== 0 && !curByLin.has(p.lin)) {
+      if (!endsOf.has(p.g)) endsOf.set(p.g, []);
+      endsOf.get(p.g).push(p.pts[0], p.pts[p.pts.length - 1]);
+    }
+    const eg = [...endsOf.keys()];
+    for (let i = 0; i < eg.length; i++) for (let j = i + 1; j < eg.length; j++) {
+      const A = groups[eg[i]], B = groups[eg[j]];
+      if (A.n !== B.n) continue;
+      let hit = false;
+      for (const a of endsOf.get(eg[i])) { for (const b of endsOf.get(eg[j])) { const [kx, ky] = kxy(a[1]); if (Math.hypot((a[0] - b[0]) * kx, (a[1] - b[1]) * ky) < 500) { hit = true; break; } } if (hit) break; }
+      if (hit) par[fnd(eg[j])] = fnd(eg[i]);
+    }
+    for (const p of P) p.g = fnd(p.g);
+
+    // 4) 駅
+    const S = [];
+    for (const f of SF) {
+      if (!f.g) continue;
+      let x, y;
+      if (f.g.t === 'pt') [x, y] = f.g.c;
+      else { const l = f.g.c[0]; const mid = l[Math.floor(l.length / 2)]; [x, y] = mid; }
+      const p = f.p;
+      S.push({ stn: T(p[ms.stn]), lin: T(p[ms.lin]), opc: T(p[ms.opc]), usb: I(p[ms.usb]), s: I(p[ms.s]), e: I(p[ms.e]), rf: T(p[ms.rfid]), x, y });
+    }
+    log(`駅レコード ${S.length} 件を読み込み`);
+    const sidx = new Idx(0.002);
+    S.forEach((s, i) => sidx.add(i, s.x, s.y, s.x, s.y));
+    const pidx = new Idx(0.002);
+    P.forEach((p, i) => pidx.addLine(i, p.pts));
+    const OUTS = [], seen = new Map();
+    for (let i = 0; i < S.length; i++) {
+      const s = S[i];
+      if (s.e !== 9999) {
+        const Y = s.e === 999 ? null : s.e + 1;
+        const isAlive = t => Y == null ? t.e === 9999 : alive(t, Y);
+        const c1 = sidx.near(s.x, s.y, 100, j => j !== i && isAlive(S[j]) && (S[j].stn === s.stn || (s.rf && S[j].rf === s.rf))).d < 100;
+        const c2 = Y != null && sidx.near(s.x, s.y, 30, j => j !== i && S[j].s === Y).d < 30;
+        if (c1 || c2) continue;
+      }
+      let r = pidx.near(s.x, s.y, 1500, pi => P[pi].lin === s.lin && (s.e !== 9999 || P[pi].k === 0));
+      if (r.tag == null) r = pidx.near(s.x, s.y, 1500, pi => P[pi].lin === s.lin);
+      if (r.tag == null) r = pidx.near(s.x, s.y, 100);
+      if (r.tag == null) continue;
+      const g = P[r.tag].g;
+      let k = 0;
+      if (s.e !== 9999) {
+        const r2 = pidx.near(s.x, s.y, 60, pi => P[pi].g === g && P[pi].k !== 0);
+        k = r2.tag != null ? P[r2.tag].k : 2;
+      }
+      const key = g + '|' + s.stn + '|' + k;
+      const prev = seen.get(key) || [];
+      const [kx, ky] = kxy(s.y);
+      if (prev.some(q => Math.hypot((q[0] - s.x) * kx, (q[1] - s.y) * ky) < 300)) continue;
+      prev.push([s.x, s.y]); seen.set(key, prev);
+      OUTS.push({ g, n: s.stn, k, y0: valid(s.usb) ? s.usb : 0, y1: s.e === 9999 ? 0 : (s.e === 999 ? 0 : s.e + 1), x: s.x, y: s.y });
+      if (i % 2000 === 0) { log(`駅の判定中… ${i}/${S.length}`); await tick(); }
+    }
+
+    // 5) グループ情報を集計して詰める
+    const used = new Map(), GO = [];
+    const remap = g => {
+      if (!used.has(g)) { used.set(g, GO.length); const s = groups[g]; GO.push({ n: s.n, c: s.c, t: s.t, y0: 9999, y1: 0, f: 0, cy: -1, hasC: false }); }
+      return used.get(g);
+    };
+    for (const p of P) {
+      const gi = remap(p.g), G2 = GO[gi];
+      p.g = gi;
+      G2.f |= (1 << p.k);
+      if (valid(p.usb)) G2.y0 = Math.min(G2.y0, p.usb);
+      if (p.k === 2 && p.y1) G2.y1 = Math.max(G2.y1, p.y1);
+      if (p.k === 0) { G2.c = p.opc; G2.hasC = true; }
+      else if (!G2.hasC && (p.y1 || 0) >= G2.cy) { G2.c = p.opc; G2.cy = p.y1 || 0; }
+    }
+    const enc = pts => {
+      const out = []; let px = 0, py = 0;
+      for (const [x, y] of pts) { const X = Math.round(x * 1e5), Y = Math.round(y * 1e5); out.push(X - px, Y - py); px = X; py = Y; }
+      return out;
+    };
+    const res = {
+      fmt: 'haisen-rail-1', made: new Date().toISOString(),
+      groups: GO.map(g => [g.n, g.c, g.t, g.y0 === 9999 ? 0 : g.y0, g.y1, g.f]),
+      pieces: P.map(p => [p.g, p.k, valid(p.usb) ? p.usb : 0, p.y1 || 0, enc(p.pts)]),
+      stations: OUTS.filter(s => used.has(s.g)).map(s => [used.get(s.g), s.n, s.k, s.y0, s.y1, Math.round(s.x * 1e5), Math.round(s.y * 1e5)])
+    };
+    const cnt = [0, 0, 0]; P.forEach(p => cnt[p.k]++);
+    log(`完了：路線 ${GO.length}／区間 現役${cnt[0]}・旧線${cnt[1]}・廃線${cnt[2]}／駅 ${res.stations.length}`);
+    return res;
+  }
+
+  return { parseShp, parseDbf, fromGeoJSON, guessMap, convert };
+})();
+
+</script>
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const FONT = "'Hiragino Sans','Hiragino Kaku Gothic ProN','Noto Sans JP','Yu Gothic','Meiryo',sans-serif";
+const CLS = ['current', 'old', 'abandoned'];
+const CLS_JA = { current: '現役', old: '旧線', abandoned: '廃線' };
+const GSI = 'https://cyberjapandata.gsi.go.jp/xyz/';
+const FONTS = {
+  sys:      { name: 'ゴシック（パソコンの標準）' },
+  noto:     { name: 'ゴシック（Noto Sans JP）', g: 'Noto+Sans+JP:wght@400;700', fam: "'Noto Sans JP'" },
+  maru:     { name: '丸ゴシック', g: 'Zen+Maru+Gothic:wght@500;700', fam: "'Zen Maru Gothic'" },
+  futo:     { name: '極太ゴシック', g: 'Dela+Gothic+One', fam: "'Dela Gothic One'" },
+  mincho:   { name: '明朝（しっぽり明朝）', g: 'Shippori+Mincho:wght@400;700', fam: "'Shippori Mincho'" },
+  serif:    { name: '明朝（Noto Serif JP）', g: 'Noto+Serif+JP:wght@400;700', fam: "'Noto Serif JP'" },
+  fude:     { name: '毛筆（佑字肅）', g: 'Yuji+Syuku', fam: "'Yuji Syuku'" },
+  fude2:    { name: '毛筆（佑字朴）', g: 'Yuji+Boku', fam: "'Yuji Boku'" },
+  pen:      { name: '手描き（筆ペン風）', g: 'Zen+Kurenaido', fam: "'Zen Kurenaido'" },
+  tegaki:   { name: '手描き（鉛筆風）', g: 'Klee+One:wght@400;600', fam: "'Klee One'" },
+  dot:      { name: 'ドット文字', g: 'DotGothic16', fam: "'DotGothic16'" }
+};
+const DASHES = [['solid', '実線'], ['dash', '破線'], ['long', '長い破線'], ['dot', '点線'], ['chain', '一点鎖線'], ['chain2', '二点鎖線'], ['jr', '地図記号：JR'], ['priv', '地図記号：私鉄'], ['subway', '地図記号：地下鉄']];
+const fontLinked = new Set();
+function fontFam(key) { const f = FONTS[key]; return f && f.fam ? `${f.fam}, ${FONT}` : FONT; }
+function fontCss(key, size, bold = cfg.bold) { return `${bold ? 'bold ' : ''}${size}px ${fontFam(key)}`; }
+function ensureFont(key) {
+  const f = FONTS[key];
+  if (!f || !f.g || fontLinked.has(key)) return;
+  fontLinked.add(key);
+  const l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = `https://fonts.googleapis.com/css2?family=${f.g}&display=swap`;
+  fontLinkP[key] = new Promise(res => {
+    l.onload = () => { document.fonts.load(fontCss(key, 20), '駅線廃止年あいう0123').then(redraw, redraw); res(); };
+    l.onerror = () => res();
+  });
+  document.head.appendChild(l);
+}
+const fontLinkP = {};
+async function fontsReady() {
+  const keys = [...new Set([cfg.fontLabel, cfg.fontTitle])];
+  keys.forEach(ensureFont);
+  await Promise.all(keys.map(k => fontLinkP[k]).filter(Boolean));
+  let txt = cfg.title + '0123456789（）–年廃止現役旧線';
+  for (const sl of S.sel) { const g = S.groups[sl.gi]; txt += g.n; for (const si of g.stations) txt += S.stations[si].n; }
+  const uniq = [...new Set(txt)].join('');
+  try { await Promise.all(keys.filter(k => FONTS[k] && FONTS[k].fam).map(k => document.fonts.load(fontCss(k, 40), uniq))); } catch (e) {}
+}
+if (document.fonts) document.fonts.addEventListener('loadingdone', () => redraw());
+const BASES = {
+  pale:  { name: '淡色地図', url: GSI + 'pale/{z}/{x}/{y}.png', min: 2, max: 18, attr: '地理院タイル（淡色地図）' },
+  std:   { name: '標準地図', url: GSI + 'std/{z}/{x}/{y}.png', min: 2, max: 18, attr: '地理院タイル（標準地図）' },
+  photo: { name: '写真（全国最新）', url: GSI + 'seamlessphoto/{z}/{x}/{y}.jpg', min: 2, max: 18, attr: '地理院タイル（全国最新写真（シームレス））' },
+  p7478: { name: '空中写真 1974〜1978年', url: GSI + 'gazo1/{z}/{x}/{y}.jpg', min: 10, max: 17, under: true, attr: '地理院タイル（空中写真（1974年～1978年））' },
+  p6169: { name: '空中写真 1961〜1969年', url: GSI + 'ort_old10/{z}/{x}/{y}.png', min: 10, max: 17, under: true, attr: '地理院タイル（空中写真（1961年～1969年））' },
+  p4550: { name: '空中写真 1945〜1950年', url: GSI + 'ort_USA10/{z}/{x}/{y}.png', min: 10, max: 17, under: true, attr: '地理院タイル（空中写真（1945年～1950年））' },
+  blank: { name: '白地図（海岸線・境界だけ）', url: GSI + 'blank/{z}/{x}/{y}.png', min: 5, max: 14, minNative: true, attr: '地理院タイル（白地図）' },
+  none:  { name: 'なし（白）', url: null, attr: '' }
+};
+const DEF = {
+  base: 'pale', baseOpacity: 1, showOthers: true, othersInExport: false, showOld: true,
+  sty: {
+    current:   { color: '#1f5fbf', width: 5, dash: 'solid', casing: true },
+    old:       { color: '#8a8a8a', width: 4, dash: 'dash', casing: true },
+    abandoned: { color: '#e3262f', width: 6, dash: 'solid', casing: true }
+  },
+  fontLabel: 'sys', fontTitle: 'sys', bold: true,
+  stCur: true, stClosed: true, stLabel: true, stSize: 14, stR: 4.5, stYear: 'closed',
+  lnLabel: true, lnYear: true, lnSize: 18,
+  aspect: '16:9', outW: 1600, title: '', titleSize: 26, legend: false,
+  attrAuto: true, attrText: '', attrPos: 'br', attrSize: 12
+};
+const LSKEY = 'haisen-kasane-v1';
+const clone = o => JSON.parse(JSON.stringify(o));
+function merge(d, o) {
+  if (!o || typeof o !== 'object') return clone(d);
+  const r = Array.isArray(d) ? [] : {};
+  for (const k in d) r[k] = (d[k] && typeof d[k] === 'object') ? merge(d[k], o[k]) : (o[k] !== undefined ? o[k] : d[k]);
+  return r;
+}
+let cfg = clone(DEF);
+const S = { groups: [], pieces: [], stations: [], sel: [], offsets: {}, lstyle: {}, loaded: false, pendingSel: null, json: null };
+let mode = 'make';
+try { mode = localStorage.getItem('haisen-kasane-mode') === 'view' ? 'view' : 'make'; } catch (e) {}
+const VW = { year: 2025, yearOn: false, cur: true, old: false, decade: true, sel: null, maxY: 2025 };
+try { Object.assign(VW, JSON.parse(localStorage.getItem('haisen-kasane-view') || '{}'), { sel: null }); } catch (e) {}
+function saveVW() { try { const { sel, ...o } = VW; localStorage.setItem('haisen-kasane-view', JSON.stringify(o)); } catch (e) {} }
+
+/* ---------- 保存 ---------- */
+let saveT = 0;
+function save() {
+  clearTimeout(saveT);
+  saveT = setTimeout(() => {
+    try {
+      localStorage.setItem(LSKEY, JSON.stringify({
+        cfg, offsets: S.offsets, lstyle: S.lstyle,
+        sel: S.loaded ? S.sel.map(s => ({ key: gkey(S.groups[s.gi]), show: s.show, color: s.color })) : (S.pendingSel || [])
+      }));
+    } catch (e) {}
+  }, 300);
+}
+function loadSaved() {
+  try {
+    const o = JSON.parse(localStorage.getItem(LSKEY) || 'null');
+    if (o) { cfg = merge(DEF, o.cfg); S.offsets = o.offsets || {}; S.lstyle = o.lstyle || {}; S.pendingSel = o.sel || []; }
+  } catch (e) {}
+}
+const gkey = g => g.n + '|' + g.c;
+
+/* ---------- メルカトル ---------- */
+function toMerc(lng, lat) {
+  const s = Math.sin(Math.max(-85.0511, Math.min(85.0511, lat)) * Math.PI / 180);
+  return [(lng + 180) / 360, 0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)];
+}
+const fromMerc = (mx, my) => [Math.atan(Math.sinh(Math.PI * (1 - 2 * my))) * 180 / Math.PI, mx * 360 - 180];
+
+/* ---------- 地図 ---------- */
+loadSaved();
+const map = L.map('map', { zoomSnap: 0.25, zoomDelta: 0.5, wheelPxPerZoomLevel: 100, maxZoom: 18, minZoom: 4 }).setView([36.2, 137.8], 5);
+map.attributionControl.setPrefix('<a href="https://leafletjs.com" target="_blank">Leaflet</a>');
+let baseL = null, underL = null;
+function setBase() {
+  if (baseL) map.removeLayer(baseL);
+  if (underL) map.removeLayer(underL);
+  baseL = underL = null;
+  const b = BASES[cfg.base] || BASES.pale;
+  const at = '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank">地理院タイル</a>';
+  const op = cfg.baseOpacity;
+  if (b.under) underL = L.tileLayer(BASES.pale.url, { maxNativeZoom: 18, maxZoom: 18, attribution: at, crossOrigin: true, opacity: op }).addTo(map);
+  if (b.url) {
+    const o = { maxNativeZoom: b.max, maxZoom: 18, attribution: at, crossOrigin: true, opacity: op };
+    if (b.minNative) o.minNativeZoom = b.min; else o.minZoom = b.min;
+    baseL = L.tileLayer(b.url, o).addTo(map);
+  }
+  updateAttr();
+}
+function setOpacity() {
+  if (baseL) baseL.setOpacity(cfg.baseOpacity);
+  if (underL) underL.setOpacity(cfg.baseOpacity);
+  $('opVal').textContent = Math.round(cfg.baseOpacity * 100) + '%';
+}
+
+/* ---------- オーバーレイ canvas ---------- */
+const ov = $('ov'), octx = ov.getContext('2d');
+let dpr = 1;
+function resizeOv() {
+  const s = map.getSize();
+  dpr = window.devicePixelRatio || 1;
+  ov.width = Math.round(s.x * dpr); ov.height = Math.round(s.y * dpr);
+  ov.style.width = s.x + 'px'; ov.style.height = s.y + 'px';
+}
+let raf = 0;
+function redraw() { if (!raf) raf = requestAnimationFrame(() => { raf = 0; drawScreen(); }); }
+map.on('move zoomend viewreset', redraw);
+map.on('resize', () => { resizeOv(); placeFrame(); redraw(); });
+map.on('zoomanim', () => { ov.style.opacity = 0; });
+map.on('zoomend', () => { ov.style.opacity = 1; });
+new ResizeObserver(() => map.invalidateSize()).observe($('mainEl'));
+
+function screenView() {
+  const z = map.getZoom(), ws = 256 * Math.pow(2, z);
+  const c = map.project(map.getCenter(), z), sz = map.getSize();
+  const ox = c.x - sz.x / 2, oy = c.y - sz.y / 2;
+  return { k: 1, z, ws, ox, oy, W: sz.x, H: sz.y,
+    P: (mx, my) => [mx * ws - ox, my * ws - oy],
+    cull: [ox / ws, oy / ws, (ox + sz.x) / ws, (oy + sz.y) / ws] };
+}
+function frameRect() {
+  const s = map.getSize();
+  if (cfg.aspect === 'view') return { x: 0, y: 0, w: s.x, h: s.y };
+  const [a, b] = cfg.aspect.split(':').map(Number);
+  const m = 28, W = s.x - m * 2, H = s.y - m * 2;
+  let w = W, h = W * b / a;
+  if (h > H) { h = H; w = H * a / b; }
+  return { x: Math.round((s.x - w) / 2), y: Math.round((s.y - h) / 2), w: Math.round(w), h: Math.round(h) };
+}
+const exportOpen = () => mode === 'make' && $('dExport').open;
+function placeFrame() {
+  const f = frameRect(), el = $('frame');
+  el.classList.toggle('off', !exportOpen());
+  Object.assign(el.style, { left: f.x + 'px', top: f.y + 'px', width: f.w + 'px', height: f.h + 'px' });
+  el.classList.toggle('full', cfg.aspect === 'view');
+}
+
+/* ---------- 描画 ---------- */
+let labelBoxes = [];
+function dashOf(d, w) {
+  if (d === 'dash') return [w * 2.2, w * 1.6];
+  if (d === 'dot') return [0.1, w * 1.9];
+  if (d === 'long') return [w * 5, w * 2];
+  if (d === 'chain') return [w * 5, w * 1.4, 0.1, w * 1.4];
+  if (d === 'chain2') return [w * 5, w * 1.3, 0.1, w * 1.2, 0.1, w * 1.3];
+  return [];
+}
+// 画面座標の折れ線に変換（細かすぎる点は間引く）
+function screenLine(p, V) {
+  const n = p.mx.length, out = [];
+  let [x, y] = V.P(p.mx[0], p.my[0]);
+  out.push([x, y]);
+  let lx = x, ly = y;
+  for (let i = 1; i < n; i++) {
+    [x, y] = V.P(p.mx[i], p.my[i]);
+    if (i === n - 1 || Math.abs(x - lx) + Math.abs(y - ly) > 0.6) { out.push([x, y]); lx = x; ly = y; }
+  }
+  return out;
+}
+function strokeLines(ctx, lines, w, col, dash, cap) {
+  ctx.beginPath();
+  for (const l of lines) { ctx.moveTo(l[0][0], l[0][1]); for (let i = 1; i < l.length; i++) ctx.lineTo(l[i][0], l[i][1]); }
+  ctx.lineCap = cap || 'round'; ctx.lineJoin = 'round';
+  ctx.setLineDash(dash || []); ctx.lineWidth = w; ctx.strokeStyle = col; ctx.stroke();
+  ctx.setLineDash([]); ctx.lineCap = 'round';
+}
+// 線に直角の短い棒を等間隔に描く（私鉄記号）
+function strokeTicks(ctx, lines, gap, half, w, col) {
+  ctx.beginPath();
+  for (const l of lines) {
+    let next = gap / 2;
+    let acc = 0;
+    for (let i = 1; i < l.length; i++) {
+      const [ax, ay] = l[i - 1], [bx, by] = l[i];
+      const d = Math.hypot(bx - ax, by - ay);
+      if (!d) continue;
+      const ux = (bx - ax) / d, uy = (by - ay) / d;
+      while (next <= acc + d) {
+        const t = next - acc, x = ax + ux * t, y = ay + uy * t;
+        ctx.moveTo(x - uy * half, y + ux * half); ctx.lineTo(x + uy * half, y - ux * half);
+        next += gap;
+      }
+      acc += d;
+    }
+  }
+  ctx.lineCap = 'butt'; ctx.setLineDash([]); ctx.lineWidth = w; ctx.strokeStyle = col; ctx.stroke(); ctx.lineCap = 'round';
+}
+function casingOf(sty, lines, ctx, k) {
+  const w = sty.width * k;
+  if (sty.dash === 'jr') return strokeLines(ctx, lines, w + (2 + sty.width * 0.25) * k, '#fff', []);
+  if (sty.dash === 'priv') { strokeLines(ctx, lines, w * 0.35 + 3 * k, '#fff', []); strokeTicks(ctx, lines, w * 2.4, w + 1.5 * k, w * 0.3 + 3 * k, '#fff'); return; }
+  const dash = sty.dash === 'subway' ? [w * 1.6, w * 1.1] : (sty.dash === 'solid' ? [] : dashOf(sty.dash, w));
+  strokeLines(ctx, lines, w + (2 + sty.width * 0.25) * k, '#fff', dash);
+}
+function strokeStyled(ctx, lines, sty, col, k) {
+  const w = sty.width * k;
+  if (sty.dash === 'jr') {
+    strokeLines(ctx, lines, w, col, [], 'butt');
+    strokeLines(ctx, lines, w * 0.55, '#fff', [w * 2.6, w * 2.6], 'butt');
+  } else if (sty.dash === 'priv') {
+    strokeLines(ctx, lines, w * 0.35, col, []);
+    strokeTicks(ctx, lines, w * 2.4, w, w * 0.3, col);
+  } else if (sty.dash === 'subway') {
+    strokeLines(ctx, lines, w * 0.6, col, [w * 1.6, w * 1.1], 'butt');
+  } else {
+    strokeLines(ctx, lines, w, col, dashOf(sty.dash, w));
+  }
+}
+function pathPiece(ctx, p, V) {
+  const n = p.mx.length;
+  let [x, y] = V.P(p.mx[0], p.my[0]);
+  ctx.moveTo(x, y);
+  let lx = x, ly = y;
+  for (let i = 1; i < n; i++) {
+    [x, y] = V.P(p.mx[i], p.my[i]);
+    if (i === n - 1 || Math.abs(x - lx) + Math.abs(y - ly) > 0.6) { ctx.lineTo(x, y); lx = x; ly = y; }
+  }
+}
+const inView = (p, c, pad) => !(p.bx1 < c[0] - pad || p.bx0 > c[2] + pad || p.by1 < c[1] - pad || p.by0 > c[3] + pad);
+function groupColor(sel, k) { return sel.color || cfg.sty[CLS[k]].color; }
+
+function yearTxt(y) { return y ? String(y) : '?'; }
+function stLabelText(st) {
+  if (cfg.stYear === 'none') return st.n;
+  if (st.k === 0) return cfg.stYear === 'all' ? `${st.n}（${yearTxt(st.y0)}–）` : st.n;
+  return `${st.n}（${yearTxt(st.y0)}–${st.y1 ? st.y1 : '?'}）`;
+}
+function lnLabelText(g) {
+  if (cfg.lnYear && !(g.f & 1) && g.y1) return `${g.n}（${g.y1}年廃止）`;
+  return g.n;
+}
+function textBox(ctx, txt, x, y, size, k, align, color, halo, bold = cfg.bold, alpha = 1) {
+  ctx.globalAlpha = alpha;
+  ctx.font = fontCss(cfg.fontLabel, size * k, bold);
+  ctx.textAlign = align; ctx.textBaseline = 'middle';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = halo || '#fff'; ctx.lineWidth = Math.max(2, size * 0.28) * k;
+  ctx.strokeText(txt, x, y);
+  ctx.fillStyle = color; ctx.fillText(txt, x, y);
+  const w = ctx.measureText(txt).width, h = size * k * 1.2;
+  const x0 = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
+  ctx.globalAlpha = 1;
+  return { x: x0, y: y - h / 2, w, h };
+}
+
+function drawScene(ctx, V, o) {
+  const k = V.k, c = V.cull;
+  const sel = new Map();
+  S.sel.forEach(s => { if (s.show) sel.set(s.gi, s); });
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  // うすい線
+  if (cfg.showOthers && (o.screen || cfg.othersInExport)) {
+    const st = [
+      { col: 'rgba(60,60,60,.42)', w: 1.4, d: [] },
+      { col: 'rgba(110,110,110,.4)', w: 1.2, d: [3, 3] },
+      { col: 'rgba(210,30,40,.6)', w: 1.8, d: [] }
+    ];
+    for (let kk = 0; kk < 3; kk++) {
+      ctx.beginPath();
+      for (const p of S.pieces) if (p.k === kk && !sel.has(p.g) && inView(p, c, 0)) pathPiece(ctx, p, V);
+      ctx.strokeStyle = st[kk].col; ctx.lineWidth = st[kk].w * k; ctx.setLineDash(st[kk].d.map(v => v * k));
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+  }
+  if (!sel.size) return decorate(ctx, V, o, sel);
+
+  const vis = p => sel.has(p.g) && (p.k !== 1 || cfg.showOld) && inView(p, c, 0);
+  const order = [1, 0, 2];
+  // 種類・色ごとに画面座標の線を集める
+  const groupsBy = {};
+  for (const kk of order) groupsBy[kk] = new Map();
+  for (const p of S.pieces) if (vis(p)) {
+    const col = groupColor(sel.get(p.g), p.k), m = groupsBy[p.k];
+    if (!m.has(col)) m.set(col, []);
+    m.get(col).push(screenLine(p, V));
+  }
+  // ふち
+  for (const kk of order) {
+    const sty = cfg.sty[CLS[kk]];
+    if (!sty.casing) continue;
+    const all = [].concat(...groupsBy[kk].values());
+    if (all.length) casingOf(sty, all, ctx, k);
+  }
+  // 本線
+  for (const kk of order) {
+    const sty = cfg.sty[CLS[kk]];
+    for (const [col, lines] of groupsBy[kk]) strokeStyled(ctx, lines, sty, col, k);
+  }
+  ctx.setLineDash([]);
+
+  // 駅
+  const stVis = [];
+  for (const st of S.stations) {
+    const s = sel.get(st.g);
+    if (!s) continue;
+    if (st.k === 0 && !cfg.stCur) continue;
+    if (st.k !== 0 && !cfg.stClosed) continue;
+    if (st.k === 1 && !cfg.showOld) continue;
+    if (st.mx < c[0] - 0.0001 || st.mx > c[2] + 0.0001 || st.my < c[1] - 0.0001 || st.my > c[3] + 0.0001) continue;
+    stVis.push([st, s]);
+  }
+  for (const [st, s] of stVis) {
+    const [x, y] = V.P(st.mx, st.my);
+    ctx.beginPath(); ctx.arc(x, y, cfg.stR * k, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.lineWidth = Math.max(1.5, cfg.stR * 0.45) * k;
+    ctx.strokeStyle = groupColor(s, st.k); ctx.stroke();
+  }
+  if (cfg.stLabel) {
+    for (const [st, s] of stVis) {
+      const [x, y] = V.P(st.mx, st.my);
+      const key = 's:' + gkey(S.groups[st.g]) + ':' + st.n + ':' + st.k;
+      const ls = S.lstyle[key] || {};
+      if (ls.hide && !o.screen) continue;
+      const off = S.offsets[key] || { dx: cfg.stR + 4, dy: 0 };
+      const b = textBox(ctx, stLabelText(st), x + off.dx * k, y + off.dy * k, ls.size || cfg.stSize, k, 'left', ls.color || '#222222', ls.halo || '#ffffff', ls.bold ?? cfg.bold, ls.hide ? 0.28 : 1);
+      if (o.screen) labelBoxes.push({ key, ...b, def: { dx: cfg.stR + 4, dy: 0 }, name: st.n + '駅', defSize: cfg.stSize, defColor: '#222222' });
+    }
+  }
+  // 路線注記
+  if (cfg.lnLabel) {
+    for (const [gi, s] of sel) {
+      const g = S.groups[gi];
+      if (!g.anchor) continue;
+      const [x, y] = V.P(g.anchor[0], g.anchor[1]);
+      const key = 'l:' + gkey(g);
+      const def = { dx: 0, dy: -cfg.lnSize * 1.1 };
+      const off = S.offsets[key] || def;
+      const kk = (g.f & 1) ? 0 : (g.f & 4) ? 2 : 1;
+      const ls = S.lstyle[key] || {};
+      if (ls.hide && !o.screen) continue;
+      const dcol = groupColor(s, kk);
+      const b = textBox(ctx, lnLabelText(g), x + off.dx * k, y + off.dy * k, ls.size || cfg.lnSize, k, 'center', ls.color || dcol, ls.halo || '#ffffff', ls.bold ?? cfg.bold, ls.hide ? 0.28 : 1);
+      if (o.screen) labelBoxes.push({ key, ...b, def, name: g.n + '（注記）', defSize: cfg.lnSize, defColor: dcol });
+    }
+  }
+  decorate(ctx, V, o, sel);
+}
+
+function attrString() {
+  if (!cfg.attrAuto) return cfg.attrText;
+  const b = BASES[cfg.base];
+  const t = [];
+  if (b.attr) t.push(`国土地理院「${b.attr}」`);
+  if (b.under) t.push(`国土地理院「${BASES.pale.attr}」`);
+  const map = t.length ? `地図：${t.join('・')}` : '';
+  const dat = '路線・駅：国土交通省「国土数値情報（鉄道時系列データ）」を加工して作成';
+  return [map, dat].filter(Boolean).join('\n');
+}
+function updateAttr() {
+  if (cfg.attrAuto) { $('attrText').value = attrString(); }
+  $('attrText').disabled = cfg.attrAuto;
+}
+function decorate(ctx, V, o, sel) {
+  const f = o.frame; if (!f) return;
+  const k = V.k;
+  // タイトル
+  if (cfg.title) {
+    ctx.font = fontCss(cfg.fontTitle, cfg.titleSize * k);
+    const pad = 9 * k, w = ctx.measureText(cfg.title).width, h = cfg.titleSize * k * 1.25;
+    const x = f.x + 14 * k, y = f.y + 14 * k;
+    ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillRect(x, y, w + pad * 2, h + pad * 1.4);
+    ctx.fillStyle = '#111'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    ctx.fillText(cfg.title, x + pad, y + (h + pad * 1.4) / 2);
+  }
+  // 凡例
+  if (cfg.legend && sel.size) {
+    let flags = 0;
+    for (const p of S.pieces) if (sel.has(p.g) && (p.k !== 1 || cfg.showOld)) flags |= 1 << p.k;
+    const rows = [0, 1, 2].filter(kk => flags & (1 << kk));
+    if (rows.length) {
+      const fs = 13 * k, rh = fs * 1.9, pad = 8 * k, sw = 40 * k;
+      ctx.font = fontCss(cfg.fontLabel, fs, false);
+      const tw = Math.max(...rows.map(kk => ctx.measureText(CLS_JA[kk === 2 ? 'abandoned' : CLS[kk]]).width));
+      const bw = pad * 3 + sw + tw, bh = pad * 2 + rh * rows.length;
+      const onLeftBottom = cfg.attrPos === 'bl';
+      const x = onLeftBottom ? f.x + f.w - bw - 14 * k : f.x + 14 * k, y = f.y + f.h - bh - 14 * k;
+      ctx.fillStyle = 'rgba(255,255,255,.88)'; ctx.fillRect(x, y, bw, bh);
+      rows.forEach((kk, i) => {
+        const sty = cfg.sty[CLS[kk]], cy = y + pad + rh * (i + 0.5);
+        const ln = [[[x + pad, cy], [x + pad + sw, cy]]];
+        if (sty.casing) casingOf(sty, ln, ctx, k);
+        strokeStyled(ctx, ln, sty, sty.color, k);
+        ctx.fillStyle = '#222'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        ctx.fillText(CLS_JA[CLS[kk]], x + pad * 2 + sw, cy);
+      });
+    }
+  }
+  // 出典
+  const txt = (cfg.attrAuto ? attrString() : cfg.attrText || '').trim();
+  if (txt) {
+    const lines = txt.split('\n');
+    let fs = cfg.attrSize * k;
+    ctx.font = `${fs}px ${FONT}`;
+    let w = Math.max(...lines.map(l => ctx.measureText(l).width));
+    const maxW = f.w - 28 * k;
+    if (w > maxW) { fs *= maxW / w; ctx.font = `${fs}px ${FONT}`; w = maxW; }
+    const pad = 5 * k, lh = fs * 1.35, h = lh * lines.length + pad * 2, bw = w + pad * 2;
+    const right = cfg.attrPos[1] === 'r', bottom = cfg.attrPos[0] === 'b';
+    const x = right ? f.x + f.w - bw - 6 * k : f.x + 6 * k;
+    let y = bottom ? f.y + f.h - h - 6 * k : f.y + 6 * k;
+    if (!bottom && cfg.title && !right) y += cfg.titleSize * k * 1.25 + 30 * k;
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.fillRect(x, y, bw, h);
+    ctx.fillStyle = '#333'; ctx.textAlign = right ? 'right' : 'left'; ctx.textBaseline = 'middle';
+    lines.forEach((l, i) => ctx.fillText(l, right ? x + bw - pad : x + pad, y + pad + lh * (i + 0.5)));
+  }
+}
+
+function drawScreen() {
+  const s = map.getSize();
+  if (ov.width !== Math.round(s.x * dpr)) resizeOv();
+  octx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  octx.clearRect(0, 0, s.x, s.y);
+  labelBoxes = [];
+  if (!S.loaded) return;
+  const V = screenView();
+  if (mode === 'view') drawView(octx, V);
+  else drawScene(octx, V, { screen: true, frame: exportOpen() ? frameRect() : null });
+}
+
+/* ---------- 見るモードの描画 ---------- */
+const DEC = [[1950, '#6741d9', '1950年代'], [1960, '#1971c2', '1960年代'], [1970, '#0c8599', '1970年代'], [1980, '#e03131', '1980年代'], [1990, '#f08c00', '1990年代'], [2000, '#c2255c', '2000年代'], [2010, '#5c940d', '2010年代'], [2020, '#343a40', '2020年代']];
+function decColor(y) { if (!y) return '#868e96'; let c = DEC[0][1]; for (const [d, col] of DEC) if (y >= d) c = col; return c; }
+function viewVisible(p) {
+  if (p.k === 0 && !VW.cur) return false;
+  if (p.k === 1 && !VW.old) return false;
+  if (VW.yearOn) {
+    if (p.y0 && p.y0 > VW.year) return false;
+    if (p.y1 && p.y1 <= VW.year) return false;
+  }
+  return true;
+}
+const abColor = p => VW.decade ? decColor(p.y1) : '#e3262f';
+function drawView(ctx, V) {
+  const c = V.cull;
+  const cur = [], old = [], ab = new Map(), hl = [];
+  for (const p of S.pieces) {
+    if (!inView(p, c, 0) || !viewVisible(p)) continue;
+    const l = screenLine(p, V);
+    if (p.g === VW.sel) hl.push([p, l]);
+    if (p.k === 0) cur.push(l);
+    else if (p.k === 1) old.push(l);
+    else { const col = abColor(p); if (!ab.has(col)) ab.set(col, []); ab.get(col).push(l); }
+  }
+  if (cur.length) strokeLines(ctx, cur, 1.6, 'rgba(60,60,60,.5)', []);
+  if (old.length) strokeLines(ctx, old, 2, 'rgba(110,110,110,.75)', [5, 4]);
+  const allAb = [].concat(...ab.values());
+  if (allAb.length) strokeLines(ctx, allAb, 5.5, 'rgba(255,255,255,.9)', []);
+  for (const [col, ls] of ab) strokeLines(ctx, ls, 3, col, []);
+  // えらんだ路線を強調
+  if (hl.length) {
+    strokeLines(ctx, hl.map(h => h[1]), 14, 'rgba(255,212,59,.75)', []);
+    for (const [p, l] of hl) {
+      const col = p.k === 2 ? abColor(p) : p.k === 1 ? '#777' : '#333';
+      strokeLines(ctx, [l], p.k === 0 ? 3 : 4.5, col, p.k === 1 ? [7, 5] : []);
+    }
+    const g = S.groups[VW.sel];
+    for (const si of g.stations) {
+      const st = S.stations[si];
+      if (st.k === 1 && !VW.old) continue;
+      if (VW.yearOn && ((st.y0 && st.y0 > VW.year) || (st.y1 && st.y1 <= VW.year))) continue;
+      if (st.mx < c[0] || st.mx > c[2] || st.my < c[1] || st.my > c[3]) continue;
+      const [x, y] = V.P(st.mx, st.my);
+      ctx.beginPath(); ctx.arc(x, y, 4.5, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = st.k === 0 ? '#333' : '#e3262f'; ctx.stroke();
+      if (V.z >= 10) textBox(ctx, st.n, x + 8, y, 12, 1, 'left', '#222222', '#ffffff', true);
+    }
+  }
+  if (VW.yearOn) {
+    ctx.font = `bold 44px ${FONT}`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.lineJoin = 'round'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 8;
+    const t = `${VW.year}年`;
+    ctx.strokeText(t, 60, 14); ctx.fillStyle = '#222'; ctx.fillText(t, 60, 14);
+  }
+}
+
+
+/* ---------- データ読込 ---------- */
+function loadData(d, src) {
+  if (!d || d.fmt !== 'haisen-rail-1') throw new Error('形式がちがう');
+  S.groups = d.groups.map((g, i) => ({ i, n: g[0], c: g[1], t: g[2], y0: g[3], y1: g[4], f: g[5], pieces: [], stations: [] }));
+  S.pieces = d.pieces.map((a, i) => {
+    const [g, k, y0, y1, e] = a;
+    const n = e.length / 2, mx = new Float64Array(n), my = new Float64Array(n);
+    let X = 0, Y = 0, bx0 = 1, by0 = 1, bx1 = 0, by1 = 0, len = 0, km = 0;
+    for (let j = 0; j < n; j++) {
+      X += e[2 * j]; Y += e[2 * j + 1];
+      const [u, v] = toMerc(X / 1e5, Y / 1e5);
+      mx[j] = u; my[j] = v;
+      if (u < bx0) bx0 = u; if (u > bx1) bx1 = u; if (v < by0) by0 = v; if (v > by1) by1 = v;
+      if (j) { const d = Math.hypot(u - mx[j - 1], v - my[j - 1]); len += d; km += d * 40075.017 / Math.cosh(Math.PI * (1 - 2 * v)); }
+    }
+    S.groups[g].pieces.push(i);
+    return { g, k, y0, y1, mx, my, bx0, by0, bx1, by1, len, km };
+  });
+  S.stations = d.stations.map((a, i) => {
+    const [g, n, k, y0, y1, X, Y] = a;
+    const [mx, my] = toMerc(X / 1e5, Y / 1e5);
+    S.groups[g].stations.push(i);
+    return { g, n, k, y0, y1, mx, my };
+  });
+  for (const g of S.groups) {
+    const want = (g.f & 1) ? 0 : (g.f & 4) ? 2 : 1;
+    let best = null;
+    for (const pi of g.pieces) { const p = S.pieces[pi]; if (p.k === want && (!best || p.len > best.len)) best = p; }
+    if (!best) continue;
+    let half = best.len / 2, acc = 0;
+    for (let j = 1; j < best.mx.length; j++) {
+      const d = Math.hypot(best.mx[j] - best.mx[j - 1], best.my[j] - best.my[j - 1]);
+      if (acc + d >= half) { const t = d ? (half - acc) / d : 0; g.anchor = [best.mx[j - 1] + (best.mx[j] - best.mx[j - 1]) * t, best.my[j - 1] + (best.my[j] - best.my[j - 1]) * t]; break; }
+      acc += d;
+    }
+    if (!g.anchor) g.anchor = [best.mx[0], best.my[0]];
+  }
+  S.loaded = true;
+  VW.maxY = Math.max(1990, ...S.pieces.map(p => p.y1 || 0), ...S.stations.map(st => st.y1 || 0));
+  $('vYear').max = VW.maxY;
+  if (VW.year > VW.maxY || VW.year < 1950) VW.year = VW.maxY;
+  syncView();
+  const nAb = S.groups.filter(g => !(g.f & 1)).length;
+  setStatus(`${src}：${S.groups.length}路線（うち全廃 ${nAb}）・駅 ${S.stations.length}`);
+  S.info = { src, orig: d.src || '', made: d.made || '', ng: S.groups.length, nAb, ns: S.stations.length };
+  renderInfo();
+  // 保存していた選択を復元
+  if (S.pendingSel) {
+    const byKey = new Map(S.groups.map(g => [gkey(g), g.i]));
+    S.sel = S.pendingSel.filter(s => byKey.has(s.key)).map(s => ({ gi: byKey.get(s.key), show: s.show !== false, color: s.color || '' }));
+    S.pendingSel = null;
+  }
+  renderSel(); doSearch(); redraw();
+}
+function setStatus(t) { $('status').textContent = t; }
+
+async function autoLoad() {
+  try {
+    const r = await fetch('rail_n05.json', { cache: 'no-cache' });
+    if (!r.ok) throw 0;
+    setStatus('rail_n05.json を読み込み中…');
+    loadData(await r.json(), 'rail_n05.json');
+  } catch (e) {
+    setStatus('データ未読込：下の「データのセットアップ」から読み込んで');
+    renderInfo(); openSetup();
+  }
+}
+
+/* ---------- セットアップ窓 ---------- */
+function openSetup() { $('setup').style.display = 'flex'; }
+function closeSetup() { $('setup').style.display = 'none'; }
+$('setupBtn').onclick = openSetup;
+$('setupClose').onclick = closeSetup;
+$('setup').addEventListener('click', e => { if (e.target.id === 'setup') closeSetup(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('modal').style.display !== 'flex') closeSetup(); });
+function renderInfo() {
+  const el = $('dataInfo'), i = S.info;
+  if (!i) { el.innerHTML = '<b>データ：まだ読み込まれていない</b><br>index.html と同じ場所に rail_n05.json が無いか、ファイルを直接開いている。'; return; }
+  const dt = i.made ? new Date(i.made) : null;
+  el.innerHTML = `<b>いま使っているデータ：${escapeHtml(i.src)}</b>` +
+    (i.orig ? `<br>元データ：${escapeHtml(i.orig)}` : '') +
+    (dt && !isNaN(dt) ? `<br>変換日：${dt.getFullYear()}/${dt.getMonth() + 1}/${dt.getDate()}` : '') +
+    `<br>路線 ${i.ng}（うち全廃 ${i.nAb}）・駅 ${i.ns}` +
+    (S.json ? '<br><span style="color:var(--acc)">変換したばかり。「rail_n05.json を保存」してGitHubに置いてね。</span>' : '');
+}
+
+/* ---------- ファイル投入・変換 ---------- */
+const drop = $('drop');
+$('pickBtn').onclick = () => $('file').click();
+$('file').onchange = e => { if (e.target.files[0]) handleFile(e.target.files[0]); e.target.value = ''; };
+['dragenter', 'dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
+document.addEventListener('dragover', e => e.preventDefault());
+document.addEventListener('drop', e => { e.preventDefault(); if (e.target.closest && e.target.closest('#drop')) return; const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
+
+async function handleFile(file) {
+  try {
+    if (/\.(json|geojson)$/i.test(file.name)) {
+      setStatus('読み込み中…');
+      const d = JSON.parse(await file.text());
+      if (d.fmt === 'haisen-rail-1') { S.json = null; loadData(d, file.name); return; }
+      alert('このJSONは変換済みデータ（rail_n05.json）じゃないみたい。N05はzipのまま入れてね。');
+      return;
+    }
+    if (/\.zip$/i.test(file.name)) {
+      setStatus('zipを開いています…');
+      const zip = await JSZip.loadAsync(file);
+      openModal(zip, file.name);
+      return;
+    }
+    alert('zip か rail_n05.json を入れてね');
+  } catch (e) { console.error(e); alert('読み込みに失敗：' + e.message); setStatus('読み込み失敗'); }
+}
+
+const M = { zip: null, layers: {} };
+const FIELDS_L = [['lin', '路線名'], ['opc', '運営会社'], ['typ', '事業者種別'], ['usb', '供用開始年'], ['s', '設置開始年'], ['e', '設置終了年'], ['rfid', '関係ID']];
+const FIELDS_S = [['stn', '駅名'], ['lin', '路線名'], ['opc', '運営会社'], ['usb', '供用開始年'], ['s', '設置開始年'], ['e', '設置終了年'], ['rfid', '関係ID']];
+
+function openModal(zip, name) {
+  M.zip = zip; M.layers = {};
+  const files = Object.keys(zip.files).filter(n => !zip.files[n].dir);
+  const pref = list => list.sort((a, b) => score(b) - score(a));
+  const score = n => (/\.geojson$/i.test(n) ? 4 : 0) + (/utf-?8/i.test(n) ? 2 : 0) + (/2\.(shp|geojson)$/i.test(n) ? 1 : 0);
+  const lf = pref(files.filter(n => /railroad\s*section.*\.(shp|geojson)$/i.test(n)));
+  const sf = pref(files.filter(n => /station.*\.(shp|geojson)$/i.test(n)));
+  const all = files.filter(n => /\.(shp|geojson)$/i.test(n));
+  const fill = (sel, list) => { sel.innerHTML = (list.length ? list : all).map(n => `<option>${n}</option>`).join(''); };
+  fill($('mLineFile'), lf); fill($('mStFile'), sf);
+  $('mSrc').textContent = name;
+  $('log').textContent = '';
+  $('modal').style.display = 'flex';
+  refreshFields();
+}
+$('mLineFile').onchange = refreshFields;
+$('mStFile').onchange = refreshFields;
+$('mCancel').onclick = () => { $('modal').style.display = 'none'; setStatus(S.loaded ? $('status').textContent : 'データ未読込'); };
+
+function zipFile(name) {
+  const lower = name.toLowerCase();
+  const key = Object.keys(M.zip.files).find(n => n.toLowerCase() === lower);
+  return key ? M.zip.files[key] : null;
+}
+async function readLayer(name) {
+  if (M.layers[name]) return M.layers[name];
+  mlog(`${name} を読み込み中…`);
+  let feats;
+  if (/\.geojson$/i.test(name)) {
+    feats = CONV.fromGeoJSON(JSON.parse(await zipFile(name).async('string')));
+  } else {
+    const base = name.replace(/\.shp$/i, '');
+    const shp = await zipFile(name).async('arraybuffer');
+    const dbfF = zipFile(base + '.dbf');
+    if (!dbfF) throw new Error('.dbf が見つからない');
+    const dbf = await dbfF.async('arraybuffer');
+    const cpgF = zipFile(base + '.cpg');
+    let enc = 'auto';
+    if (cpgF) { const t = (await cpgF.async('string')).toLowerCase(); if (/utf/.test(t)) enc = 'utf-8'; else if (/932|sjis|shift/.test(t)) enc = 'shift_jis'; }
+    else if (/shift|sjis/i.test(name)) enc = 'shift_jis';
+    const geo = CONV.parseShp(shp), at = CONV.parseDbf(dbf, enc);
+    feats = geo.map((g, i) => ({ g, p: at.rows[i] || {} }));
+  }
+  mlog(`  → ${feats.length} 件`);
+  M.layers[name] = feats;
+  return feats;
+}
+function mlog(t) { const l = $('log'); l.textContent += t + '\n'; l.scrollTop = l.scrollHeight; }
+
+async function refreshFields() {
+  const tb = $('mFields');
+  tb.innerHTML = '<tr><td colspan=2>読み込み中…</td></tr>';
+  try {
+    const lf = await readLayer($('mLineFile').value), sf = await readLayer($('mStFile').value);
+    const gl = CONV.guessMap(lf, false), gs = CONV.guessMap(sf, true);
+    const rowsHtml = (feats, guess, defs, pre) => {
+      const sample = k => feats.slice(0, 400).filter((_, i) => i % 100 === 0 || i < 2).map(f => f.p[k]).filter(v => v !== '' && v != null).slice(0, 3).join(' / ');
+      return defs.map(([id, ja]) => `<tr><td>${ja}</td><td><select id="${pre}_${id}">` +
+        `<option value="">（なし）</option>` +
+        guess.fields.map(f => `<option value="${f}" ${guess.m[id] === f ? 'selected' : ''}>${f}　例: ${escapeHtml(String(sample(f)).slice(0, 40))}</option>`).join('') +
+        `</select></td></tr>`).join('');
+    };
+    tb.innerHTML = '<tr><td colspan=2><b>路線</b></td></tr>' + rowsHtml(lf, gl, FIELDS_L, 'fl') +
+      '<tr><td colspan=2><b>駅</b></td></tr>' + rowsHtml(sf, gs, FIELDS_S, 'fs');
+  } catch (e) { console.error(e); tb.innerHTML = `<tr><td colspan=2>読み込み失敗：${e.message}</td></tr>`; }
+}
+const escapeHtml = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+$('mGo').onclick = async () => {
+  const btn = $('mGo'); btn.disabled = true;
+  try {
+    const lf = await readLayer($('mLineFile').value), sf = await readLayer($('mStFile').value);
+    const ml = {}, ms = {};
+    FIELDS_L.forEach(([id]) => ml[id] = $('fl_' + id).value);
+    FIELDS_S.forEach(([id]) => ms[id] = $('fs_' + id).value);
+    if (!ml.lin || !ml.e || !ms.stn) { alert('路線名・設置終了年・駅名は必須'); return; }
+    mlog('変換スタート（数十秒かかることがある）');
+    const t0 = performance.now();
+    const d = await CONV.convert(lf, sf, ml, ms, mlog);
+    d.src = $('mSrc').textContent;
+    S.json = JSON.stringify(d);
+    mlog(`サイズ ${(S.json.length / 1048576).toFixed(1)}MB／${((performance.now() - t0) / 1000).toFixed(1)}秒`);
+    loadData(d, '変換データ');
+    $('saveJson').disabled = false;
+    setTimeout(() => { $('modal').style.display = 'none'; }, 900);
+  } catch (e) { console.error(e); mlog('エラー：' + e.message); }
+  finally { btn.disabled = false; }
+};
+$('saveJson').onclick = () => {
+  if (!S.json) return;
+  download(new Blob([S.json], { type: 'application/json' }), 'rail_n05.json');
+};
+function download(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
+/* ---------- 検索・選択 ---------- */
+const TYP = { 1: '新幹線', 2: 'JR在来線', 3: '公営', 4: '民営', 5: '第三セクター' };
+function tags(g) {
+  let t = '';
+  if (g.f & 1) t += '<span class="tag t0">現役</span>';
+  if (!(g.f & 1) && (g.f & 4)) t += `<span class="tag t2">廃線${g.y1 ? ' ' + g.y1 : ''}</span>`;
+  if ((g.f & 1) && (g.f & 4)) t += '<span class="tag t2">一部廃止</span>';
+  if (g.f & 2) t += '<span class="tag t1">旧線あり</span>';
+  return t;
+}
+function doSearch() {
+  const res = $('res'), q = $('q').value.trim();
+  if (!S.loaded) { res.innerHTML = ''; return; }
+  if (!q) { res.innerHTML = ''; return; }
+  const hits = new Map();
+  for (const g of S.groups) if (g.n.includes(q) || g.c.includes(q)) hits.set(g.i, '');
+  for (const st of S.stations) if (st.n.includes(q) && !hits.has(st.g)) hits.set(st.g, st.n + '駅');
+  const list = [...hits].map(([gi, why]) => ({ g: S.groups[gi], why }))
+    .sort((a, b) => (b.g.n === q) - (a.g.n === q) || (a.why ? 1 : 0) - (b.why ? 1 : 0) || a.g.n.localeCompare(b.g.n, 'ja'));
+  res.innerHTML = list.slice(0, 80).map(({ g, why }) =>
+    `<div class="item click" data-gi="${g.i}"><div class="grow"><span class="nm">${escapeHtml(g.n)}</span>${tags(g)}<div class="co">${escapeHtml(g.c)}${TYP[g.t] ? '・' + TYP[g.t] : ''}${why ? '・' + escapeHtml(why) : ''}${g.y0 ? '・' + g.y0 + '年開業' : ''}</div></div></div>`).join('')
+    + (list.length > 80 ? `<div class="hint">ほか ${list.length - 80} 件…</div>` : '')
+    + (!list.length ? '<div class="hint">見つからない</div>' : '');
+}
+$('q').addEventListener('input', doSearch);
+$('res').addEventListener('click', e => {
+  const it = e.target.closest('.item'); if (!it) return;
+  if (mode === 'view') { showInfo(+it.dataset.gi); zoomTo([+it.dataset.gi]); }
+  else addSel(+it.dataset.gi, true);
+});
+function addSel(gi, zoom) {
+  if (!S.sel.some(s => s.gi === gi)) S.sel.push({ gi, show: true, color: '' });
+  renderSel(); save(); redraw();
+  if (zoom) zoomTo([gi]);
+}
+function renderSel() {
+  const el = $('selList');
+  if (!S.sel.length) { el.innerHTML = '<div class="hint">まだない。上で探して追加してね。</div>'; return; }
+  el.innerHTML = S.sel.map((s, i) => {
+    const g = S.groups[s.gi];
+    const kk = (g.f & 1) ? 0 : (g.f & 4) ? 2 : 1;
+    const col = s.color || cfg.sty[CLS[kk]].color;
+    return `<div class="item" data-i="${i}">
+      <input type="checkbox" class="sh" ${s.show ? 'checked' : ''} title="表示">
+      <div class="grow"><span class="nm">${escapeHtml(g.n)}</span>${tags(g)}<div class="co">${escapeHtml(g.c)}</div></div>
+      <input type="color" class="cl" value="${col}" title="この路線だけ色を変える">
+      ${s.color ? '<button class="x rc" title="色を既定にもどす">↺</button>' : ''}
+      <button class="x zm" title="移動">⌖</button>
+      <button class="x rm" title="はずす">×</button></div>`;
+  }).join('');
+}
+$('selList').addEventListener('input', e => {
+  const it = e.target.closest('.item'); if (!it) return;
+  const s = S.sel[+it.dataset.i];
+  if (e.target.classList.contains('cl')) { s.color = e.target.value; save(); redraw(); }
+});
+$('selList').addEventListener('change', e => {
+  const it = e.target.closest('.item'); if (!it) return;
+  const s = S.sel[+it.dataset.i];
+  if (e.target.classList.contains('sh')) { s.show = e.target.checked; save(); redraw(); }
+  if (e.target.classList.contains('cl')) renderSel();
+});
+$('selList').addEventListener('click', e => {
+  const it = e.target.closest('.item'); if (!it) return;
+  const i = +it.dataset.i;
+  if (e.target.classList.contains('rm')) { S.sel.splice(i, 1); renderSel(); save(); redraw(); }
+  if (e.target.classList.contains('rc')) { S.sel[i].color = ''; renderSel(); save(); redraw(); }
+  if (e.target.classList.contains('zm')) zoomTo([S.sel[i].gi]);
+});
+$('zoomSel').onclick = () => zoomTo(S.sel.filter(s => s.show).map(s => s.gi));
+$('clearSel').onclick = () => { if (S.sel.length && confirm('えらんだ路線を全部はずす？')) { S.sel = []; renderSel(); save(); redraw(); } };
+function zoomTo(gis) {
+  let x0 = 1, y0 = 1, x1 = 0, y1 = 0;
+  for (const gi of gis) for (const pi of S.groups[gi].pieces) {
+    const p = S.pieces[pi];
+    if (p.k === 1 && (mode === 'view' ? !VW.old : !cfg.showOld)) continue;
+    x0 = Math.min(x0, p.bx0); y0 = Math.min(y0, p.by0); x1 = Math.max(x1, p.bx1); y1 = Math.max(y1, p.by1);
+  }
+  if (x1 < x0) return;
+  const s = map.getSize(), f = exportOpen() ? frameRect() : { x: 0, y: 0, w: s.x, h: s.y };
+  const a = fromMerc(x0, y1), b = fromMerc(x1, y0);
+  map.fitBounds([a, b], { paddingTopLeft: [f.x + 50, f.y + 50], paddingBottomRight: [s.x - f.x - f.w + 50, s.y - f.y - f.h + 50], maxZoom: 16 });
+}
+
+/* ---------- 地図上の操作：ラベルのドラッグ、線のクリック ---------- */
+const mapEl = $('map'), mainEl = $('mainEl'), tip = $('tip');
+let drag = null;
+function evPt(e) {
+  const r = mapEl.getBoundingClientRect();
+  const t = e.touches ? e.touches[0] : e;
+  return { x: t.clientX - r.left, y: t.clientY - r.top };
+}
+function hitLabel(pt) {
+  for (let i = labelBoxes.length - 1; i >= 0; i--) {
+    const b = labelBoxes[i];
+    if (pt.x >= b.x - 3 && pt.x <= b.x + b.w + 3 && pt.y >= b.y - 2 && pt.y <= b.y + b.h + 2) return b;
+  }
+  return null;
+}
+function onDown(e) {
+  if (e.button > 0) return;
+  const pt = evPt(e);
+  const hit = drag ? true : hitLabel(pt);
+  if (!hit) return;
+  e.stopPropagation(); e.preventDefault();
+  if (drag) return;
+  const o = S.offsets[hit.key] || hit.def;
+  drag = { key: hit.key, sx: pt.x, sy: pt.y, o: { ...o }, moved: false };
+  tip.style.display = 'none';
+  const mv = ev => {
+    const p = evPt(ev);
+    if (!drag.moved && Math.hypot(p.x - drag.sx, p.y - drag.sy) < 4) return;
+    if (!drag.moved) { drag.moved = true; closePop(); }
+    S.offsets[drag.key] = { dx: drag.o.dx + p.x - drag.sx, dy: drag.o.dy + p.y - drag.sy };
+    redraw();
+    ev.preventDefault();
+  };
+  const up = () => {
+    window.removeEventListener('pointermove', mv); window.removeEventListener('pointerup', up);
+    window.removeEventListener('touchmove', mv); window.removeEventListener('touchend', up);
+    const d = drag;
+    setTimeout(() => { drag = null; }, 0);
+    if (d && !d.moved) openPop(d.key); else save();
+  };
+  if (e.type === 'touchstart') { window.addEventListener('touchmove', mv, { passive: false }); window.addEventListener('touchend', up); }
+  else { window.addEventListener('pointermove', mv); window.addEventListener('pointerup', up); }
+}
+['pointerdown', 'mousedown', 'touchstart'].forEach(t => mapEl.addEventListener(t, onDown, { capture: true, passive: false }));
+mapEl.addEventListener('click', e => { if (drag) { e.stopPropagation(); } }, true);
+
+function hitLine(pt) {
+  if (!S.loaded) return null;
+  const V = screenView(), tol = 6, pad = tol / V.ws;
+  const mx = (pt.x + V.ox) / V.ws, my = (pt.y + V.oy) / V.ws;
+  const sel = new Set(S.sel.filter(s => s.show).map(s => s.gi));
+  let best = null, bd = tol;
+  for (const p of S.pieces) {
+    if (mode === 'view') { if (!viewVisible(p)) continue; }
+    else if (!cfg.showOthers && !sel.has(p.g)) continue;
+    if (mx < p.bx0 - pad || mx > p.bx1 + pad || my < p.by0 - pad || my > p.by1 + pad) continue;
+    let [ax, ay] = V.P(p.mx[0], p.my[0]);
+    for (let i = 1; i < p.mx.length; i++) {
+      const [bx, by] = V.P(p.mx[i], p.my[i]);
+      const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+      let t = L2 ? ((pt.x - ax) * dx + (pt.y - ay) * dy) / L2 : 0; t = Math.max(0, Math.min(1, t));
+      const d = Math.hypot(pt.x - ax - t * dx, pt.y - ay - t * dy);
+      if (d < bd || (d <= bd && best && sel.has(best.g) && !sel.has(p.g))) { bd = d; best = p; }
+      ax = bx; ay = by;
+    }
+  }
+  return best;
+}
+let hovRaf = 0, lastMv = null;
+mapEl.addEventListener('mousemove', e => {
+  lastMv = evPt(e);
+  if (drag || hovRaf) return;
+  hovRaf = requestAnimationFrame(() => {
+    hovRaf = 0;
+    const pt = lastMv;
+    if (hitLabel(pt)) { mainEl.className = 'lh'; tip.style.display = 'none'; return; }
+    const p = hitLine(pt);
+    if (p) {
+      const g = S.groups[p.g], selected = mode === 'make' && S.sel.some(s => s.gi === p.g);
+      if (mode === 'view') {
+        tip.innerHTML = `<b>${escapeHtml(g.n)}</b>（${escapeHtml(g.c)}）　${CLS_JA[CLS[p.k]]}${p.k && p.y1 ? '・' + p.y1 + '年まで' : ''}　<span style="opacity:.75">クリックで情報</span>`;
+        tip.style.left = (pt.x + 14) + 'px'; tip.style.top = (pt.y + 12) + 'px'; tip.style.display = 'block';
+        mainEl.className = 'ph'; return;
+      }
+      tip.innerHTML = `<b>${escapeHtml(g.n)}</b>（${escapeHtml(g.c)}）　${CLS_JA[CLS[p.k]]}${p.k && p.y1 ? '・' + p.y1 + '年まで' : ''}${selected ? '' : '　<span style="opacity:.75">クリックで追加</span>'}`;
+      tip.style.left = (pt.x + 14) + 'px'; tip.style.top = (pt.y + 12) + 'px'; tip.style.display = 'block';
+      mainEl.className = selected ? '' : 'ph';
+    } else { tip.style.display = 'none'; mainEl.className = ''; }
+  });
+});
+mapEl.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+map.on('click', e => {
+  if (drag) return;
+  const p = hitLine({ x: e.containerPoint.x, y: e.containerPoint.y });
+  if (mode === 'view') { showInfo(p ? p.g : null); tip.style.display = 'none'; return; }
+  if (p && !S.sel.some(s => s.gi === p.g)) { addSel(p.g, false); tip.style.display = 'none'; }
+});
+const TEXT_KEYS = ['fontLabel', 'fontTitle', 'bold', 'stSize', 'lnSize', 'titleSize', 'attrSize', 'stYear', 'lnYear', 'stLabel', 'lnLabel'];
+let undoText = null, undoT = 0;
+const RESET_TXT = '文字を全部もとに戻す';
+function textIsDefault() { return !Object.keys(S.offsets).length && !Object.keys(S.lstyle).length && TEXT_KEYS.every(k => cfg[k] === DEF[k]); }
+$('resetLabels').onclick = () => {
+  const btn = $('resetLabels');
+  if (undoText) {
+    S.offsets = undoText.offsets; S.lstyle = undoText.lstyle; TEXT_KEYS.forEach(k => cfg[k] = undoText.cfg[k]);
+    undoText = null; clearTimeout(undoT);
+    btn.textContent = RESET_TXT; afterTextChange(); toast('取り消した'); return;
+  }
+  if (textIsDefault()) { toast('もう最初の状態だよ'); return; }
+  undoText = { offsets: S.offsets, lstyle: S.lstyle, cfg: Object.fromEntries(TEXT_KEYS.map(k => [k, cfg[k]])) };
+  S.offsets = {}; S.lstyle = {}; TEXT_KEYS.forEach(k => cfg[k] = DEF[k]);
+  closePop(); afterTextChange();
+  btn.textContent = '↶ やっぱり取り消す';
+  undoT = setTimeout(() => { undoText = null; btn.textContent = RESET_TXT; }, 8000);
+};
+function afterTextChange() { syncUI(); ensureFont(cfg.fontLabel); ensureFont(cfg.fontTitle); renderHidden(); save(); redraw(); }
+function renderHidden() {
+  const n = Object.values(S.lstyle).filter(v => v.hide).length;
+  $('hiddenInfo').innerHTML = n ? `かくした文字：${n}個 <button id="showAllHidden">全部表示する</button>` : '';
+}
+$('hiddenInfo').addEventListener('click', e => {
+  if (e.target.id !== 'showAllHidden') return;
+  for (const k in S.lstyle) { delete S.lstyle[k].hide; if (!Object.keys(S.lstyle[k]).length) delete S.lstyle[k]; }
+  renderHidden(); save(); redraw();
+});
+
+/* ---------- 文字ひとつずつの設定 ---------- */
+let popKey = null;
+const toHex = c => /^#[0-9a-f]{6}$/i.test(c) ? c : /^#[0-9a-f]{3}$/i.test(c) ? '#' + c.slice(1).split('').map(x => x + x).join('') : '#222222';
+function openPop(key) {
+  const b = labelBoxes.find(x => x.key === key);
+  if (!b) return;
+  popKey = key;
+  const ls = S.lstyle[key] || {};
+  $('lpName').textContent = b.name || '';
+  $('lpSize').textContent = ls.size || b.defSize;
+  $('lpColor').value = toHex(ls.color || b.defColor);
+  $('lpHalo').value = toHex(ls.halo || '#ffffff');
+  $('lpBold').checked = ls.bold ?? cfg.bold;
+  $('lpHide').textContent = ls.hide ? '表示する' : 'この文字をかくす';
+  const pop = $('lpop'), sz = map.getSize();
+  pop.style.display = 'block';
+  pop.style.left = Math.max(4, Math.min(b.x + b.w + 10, sz.x - 222)) + 'px';
+  pop.style.top = Math.max(4, Math.min(b.y - 10, sz.y - pop.offsetHeight - 6)) + 'px';
+}
+function closePop() { $('lpop').style.display = 'none'; popKey = null; }
+function popSet(fn) {
+  if (!popKey) return;
+  const ls = S.lstyle[popKey] || (S.lstyle[popKey] = {});
+  fn(ls);
+  for (const k in ls) if (ls[k] === undefined) delete ls[k];
+  if (!Object.keys(ls).length) delete S.lstyle[popKey];
+  renderHidden(); save(); redraw();
+}
+const popBox = () => labelBoxes.find(x => x.key === popKey) || { defSize: 14, defColor: '#222222' };
+$('lpPlus').onclick = () => popSet(ls => { ls.size = Math.min(80, (ls.size || popBox().defSize) + 2); $('lpSize').textContent = ls.size; });
+$('lpMinus').onclick = () => popSet(ls => { ls.size = Math.max(6, (ls.size || popBox().defSize) - 2); $('lpSize').textContent = ls.size; });
+$('lpColor').oninput = e => popSet(ls => { ls.color = e.target.value; });
+$('lpHalo').oninput = e => popSet(ls => { ls.halo = e.target.value; });
+$('lpBold').onchange = e => popSet(ls => { ls.bold = e.target.checked; });
+$('lpHide').onclick = () => popSet(ls => { ls.hide = ls.hide ? undefined : true; $('lpHide').textContent = ls.hide ? '表示する' : 'この文字をかくす'; });
+$('lpReset').onclick = () => { if (!popKey) return; const k = popKey; delete S.lstyle[k]; delete S.offsets[k]; renderHidden(); save(); redraw(); requestAnimationFrame(() => requestAnimationFrame(() => openPop(k))); };
+$('lpClose').onclick = closePop;
+map.on('movestart zoomstart', closePop);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(); });
+
+/* ---------- モード切り替え ---------- */
+function setMode(m) {
+  mode = m;
+  document.body.classList.toggle('mode-view', m === 'view');
+  document.body.classList.toggle('mode-make', m === 'make');
+  document.querySelectorAll('.modeSw button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+  try { localStorage.setItem('haisen-kasane-mode', m); } catch (e) {}
+  closePop(); tip.style.display = 'none'; mainEl.className = '';
+  if (m === 'make' && playT) stopPlay();
+  $('qHint').textContent = m === 'view' ? '地図の線をクリックしても情報が見られる。' : '地図上のうすい線をクリックしても追加できる（赤っぽいのが廃線）。';
+  $('q').placeholder = m === 'view' ? '路線名・会社名・駅名で探して情報を見る' : '路線名・会社名・駅名（例：倉吉、丸ノ内）';
+  placeFrame(); doSearch(); redraw();
+}
+document.querySelectorAll('.modeSw button').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+
+/* ---------- 見るモードの操作 ---------- */
+function syncView() {
+  $('vYearOn').checked = VW.yearOn; $('vCur').checked = VW.cur; $('vOld').checked = VW.old; $('vDecade').checked = VW.decade;
+  $('vYear').value = VW.year; $('vYearLbl').textContent = VW.year + '年';
+  renderLegend();
+}
+function renderLegend() {
+  if (!S.loaded) { $('vLegend').innerHTML = ''; return; }
+  const ab = S.groups.filter(g => !(g.f & 1) && (g.f & 4));
+  if (VW.decade) {
+    const cnt = DEC.map(([d]) => ab.filter(g => g.y1 >= d && g.y1 < d + 10).length);
+    $('vLegend').innerHTML = '<div class="hint" style="margin:4px 0">廃止された年代（全廃した路線の数）</div>' +
+      DEC.map(([d, col, nm], i) => `<div class="lg"><i style="background:${col}"></i>${nm}<span style="color:var(--sub)">　${cnt[i]}路線</span></div>`).join('');
+  } else {
+    $('vLegend').innerHTML = `<div class="lg"><i style="background:#e3262f"></i>廃線<span style="color:var(--sub)">　全廃 ${ab.length}路線</span></div>` +
+      '<div class="lg"><i style="background:rgba(60,60,60,.5);height:2px"></i>現役</div>';
+  }
+}
+$('vYearOn').onchange = e => { VW.yearOn = e.target.checked; saveVW(); redraw(); };
+$('vCur').onchange = e => { VW.cur = e.target.checked; saveVW(); redraw(); };
+$('vOld').onchange = e => { VW.old = e.target.checked; saveVW(); redraw(); };
+$('vDecade').onchange = e => { VW.decade = e.target.checked; saveVW(); renderLegend(); redraw(); };
+$('vYear').oninput = e => { VW.year = +e.target.value; $('vYearLbl').textContent = VW.year + '年'; if (!VW.yearOn) { VW.yearOn = true; $('vYearOn').checked = true; } saveVW(); redraw(); };
+let playT = 0;
+function stopPlay() { clearInterval(playT); playT = 0; $('vPlay').textContent = '▶'; }
+$('vPlay').onclick = () => {
+  if (playT) { stopPlay(); saveVW(); return; }
+  if (VW.year >= VW.maxY) VW.year = 1950;
+  VW.yearOn = true; syncView(); redraw();
+  $('vPlay').textContent = '■';
+  playT = setInterval(() => {
+    if (VW.year >= VW.maxY) { stopPlay(); saveVW(); return; }
+    VW.year++; $('vYear').value = VW.year; $('vYearLbl').textContent = VW.year + '年'; redraw();
+  }, 260);
+};
+
+/* ---------- 路線の情報 ---------- */
+function orderedStations(g) {
+  const want = (g.f & 1) ? 0 : (g.f & 4) ? 2 : 1;
+  let ref = null;
+  for (const pi of g.pieces) { const p = S.pieces[pi]; if (p.k === want && (!ref || p.len > ref.len)) ref = p; }
+  const sts = g.stations.map(i => [i, S.stations[i]]);
+  if (!ref) return sts;
+  const cum = [0];
+  for (let j = 1; j < ref.mx.length; j++) cum.push(cum[j - 1] + Math.hypot(ref.mx[j] - ref.mx[j - 1], ref.my[j] - ref.my[j - 1]));
+  const pos = st => { let bi = 0, bd = Infinity; for (let j = 0; j < ref.mx.length; j++) { const d = (ref.mx[j] - st.mx) ** 2 + (ref.my[j] - st.my) ** 2; if (d < bd) { bd = d; bi = j; } } return cum[bi]; };
+  return sts.map(x => [pos(x[1]), x]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+}
+function showInfo(gi) {
+  VW.sel = gi;
+  const box = $('infoBox');
+  if (gi == null) { box.innerHTML = '<div class="hint">地図の線をクリックすると、ここに路線の情報が出る。</div>'; redraw(); return; }
+  const g = S.groups[gi];
+  const km = [0, 0, 0];
+  for (const pi of g.pieces) km[S.pieces[pi].k] += S.pieces[pi].km;
+  const sts = orderedStations(g);
+  const nClosed = sts.filter(x => x[1].k !== 0).length;
+  const kmTxt = [['現役', 0], ['廃線', 2], ['旧線', 1]].filter(([, k]) => km[k] > 0.05).map(([n, k]) => `${n} 約${km[k] < 10 ? km[k].toFixed(1) : Math.round(km[k])}km`).join('／');
+  box.innerHTML = `<div class="ttl">${escapeHtml(g.n)}</div><div style="font-size:11px;color:var(--sub)">${escapeHtml(g.c)}${TYP[g.t] ? '・' + TYP[g.t] : ''}</div>
+    <table>
+      <tr><td>状態</td><td>${tags(g)}</td></tr>
+      <tr><td>開業</td><td>${g.y0 ? g.y0 + '年' : '不明'}</td></tr>
+      ${(g.f & 4) ? `<tr><td>廃止</td><td>${g.y1 ? g.y1 + '年' : '不明'}${(g.f & 1) ? '（一部区間）' : ''}</td></tr>` : ''}
+      <tr><td>長さ</td><td>${kmTxt || '—'}</td></tr>
+      <tr><td>駅</td><td>${sts.length}駅${nClosed ? `（うち廃駅 ${nClosed}）` : ''}</td></tr>
+    </table>
+    ${sts.length ? `<div class="sts">${sts.map(([i, st]) => `<a data-si="${i}" class="${st.k ? 'cl' : ''}">${escapeHtml(st.n)}${st.k ? `（–${st.y1 || '?'}）` : ''}</a>`).join('・')}</div>` : ''}
+    <div class="row2"><button id="infoZoom">この路線に移動</button><button class="pri" id="infoUse">作るモードで使う</button></div>`;
+  redraw();
+}
+$('infoBox').addEventListener('click', e => {
+  if (e.target.id === 'infoZoom') zoomTo([VW.sel]);
+  if (e.target.id === 'infoUse') { const gi = VW.sel; setMode('make'); addSel(gi, true); }
+  const a = e.target.closest('a[data-si]');
+  if (a) { const st = S.stations[+a.dataset.si]; map.setView(fromMerc(st.mx, st.my), Math.max(map.getZoom(), 14)); }
+});
+
+let toastT = 0;
+function toast(t) { const el = $('toast'); el.textContent = t; el.style.display = 'block'; clearTimeout(toastT); toastT = setTimeout(() => { el.style.display = 'none'; }, 2600); }
+
+/* ---------- 設定UI ---------- */
+function getPath(o, p) { return p.split('.').reduce((a, k) => a[k], o); }
+function setPath(o, p, v) { const ks = p.split('.'); const last = ks.pop(); ks.reduce((a, k) => a[k], o)[last] = v; }
+function buildStyleUI() {
+  const box = $('styBox');
+  box.innerHTML = CLS.map(c => `
+    <div class="styRow"><b>${CLS_JA[c]}</b><input type="color" data-cfg="sty.${c}.color">
+      <span class="sub" style="grid-column:3">太さ <input type="number" data-cfg="sty.${c}.width" min="1" max="20" step="0.5"></span>
+      <span class="sub">線 <select data-cfg="sty.${c}.dash">${DASHES.map(([v, n]) => `<option value="${v}">${n}</option>`).join('')}</select>
+      <label><input type="checkbox" data-cfg="sty.${c}.casing">白ふち</label></span></div>`).join('');
+}
+function syncUI() {
+  document.querySelectorAll('[data-cfg]').forEach(el => {
+    const v = getPath(cfg, el.dataset.cfg);
+    if (el.type === 'checkbox') el.checked = !!v; else el.value = v;
+  });
+  $('opVal').textContent = Math.round(cfg.baseOpacity * 100) + '%';
+  updateAttr();
+}
+function bindCfg() {
+  $('base').innerHTML = Object.entries(BASES).map(([k, b]) => `<option value="${k}">${b.name}</option>`).join('');
+  document.querySelectorAll('.fontSel').forEach(el => { el.innerHTML = Object.entries(FONTS).map(([k, f]) => `<option value="${k}">${f.name}</option>`).join(''); });
+  syncUI();
+  document.querySelectorAll('[data-cfg]').forEach(el => {
+    const p = el.dataset.cfg;
+    const ev = (el.type === 'checkbox' || el.tagName === 'SELECT') ? 'change' : 'input';
+    el.addEventListener(ev, () => {
+      let nv = el.type === 'checkbox' ? el.checked : el.value;
+      if (el.type === 'number' || el.type === 'range' || p === 'outW') nv = parseFloat(nv) || 0;
+      setPath(cfg, p, nv);
+      if (p === 'base') setBase();
+      if (p === 'baseOpacity') setOpacity();
+      if (p === 'fontLabel' || p === 'fontTitle') ensureFont(nv);
+      if (p === 'attrAuto' && !cfg.attrAuto && !cfg.attrText) cfg.attrText = $('attrText').value;
+      if (p === 'attrAuto' || p === 'base') updateAttr();
+      if (p === 'aspect') placeFrame();
+      if (p.startsWith('sty.')) renderSel();
+      save(); redraw();
+    });
+  });
+}
+
+/* ---------- おぼえとく・作業ファイル ---------- */
+const SNKEY = 'haisen-kasane-snaps';
+let snaps = [];
+try { snaps = JSON.parse(localStorage.getItem(SNKEY) || '[]'); if (!Array.isArray(snaps)) snaps = []; } catch (e) { snaps = []; }
+function saveSnaps() {
+  try { localStorage.setItem(SNKEY, JSON.stringify(snaps)); return true; }
+  catch (e) { alert('ブラウザにしまえなかった（容量いっぱいかも）。作業ファイルに保存してね。'); return false; }
+}
+const pad2 = n => String(n).padStart(2, '0');
+function fmtDate(iso) { const d = new Date(iso); return isNaN(d) ? '' : `${d.getMonth() + 1}/${d.getDate()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+function autoName() {
+  const nm = S.sel.filter(s => s.show).map(s => S.groups[s.gi].n);
+  const d = new Date();
+  return (nm.length ? nm.slice(0, 2).join('・') + (nm.length > 2 ? 'ほか' : '') : '地図') + ` ${d.getMonth() + 1}/${d.getDate()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+function captureState(name) {
+  const c = map.getCenter();
+  return {
+    name, saved: new Date().toISOString(),
+    data: S.info ? (S.info.orig || S.info.src) : '',
+    view: { lat: c.lat, lng: c.lng, z: map.getZoom() },
+    sel: S.sel.map(s => { const g = S.groups[s.gi]; return { key: gkey(g), n: g.n, c: g.c, show: s.show, color: s.color }; }),
+    offsets: clone(S.offsets), lstyle: clone(S.lstyle), cfg: clone(cfg)
+  };
+}
+function applyState(st) {
+  if (!S.loaded) { alert('先に路線データを読み込んでね（データのセットアップ）'); return; }
+  cfg = merge(DEF, st.cfg || {});
+  S.offsets = clone(st.offsets || {});
+  S.lstyle = clone(st.lstyle || {});
+  closePop(); renderHidden();
+  const byKey = new Map(S.groups.map(g => [gkey(g), g.i]));
+  const miss = [];
+  S.sel = [];
+  for (const s of st.sel || []) {
+    if (byKey.has(s.key)) S.sel.push({ gi: byKey.get(s.key), show: s.show !== false, color: s.color || '' });
+    else miss.push(`${s.n || s.key.split('|')[0]}（${s.c || s.key.split('|')[1] || ''}）`);
+  }
+  syncUI(); setBase(); setOpacity();
+  ensureFont(cfg.fontLabel); ensureFont(cfg.fontTitle);
+  placeFrame(); renderSel();
+  if (st.view) map.setView([st.view.lat, st.view.lng], st.view.z, { animate: false });
+  save(); redraw();
+  if (miss.length) alert(`見つからなかった路線が ${miss.length} 本あった：\n\n${miss.join('\n')}\n\nデータの年度がちがうと、路線名や会社名が変わっていることがある。`);
+  else toast(`「${st.name}」を呼び出した`);
+}
+function renderSnaps() {
+  const el = $('snapList');
+  if (!snaps.length) { el.innerHTML = '<div class="hint">まだない。</div>'; return; }
+  el.innerHTML = snaps.map((s, i) => `<div class="snap" data-i="${i}">
+    <div class="nm" title="クリックで呼び出す"><b>${escapeHtml(s.name)}</b><span class="co">${fmtDate(s.saved)}・${(s.sel || []).length}路線</span></div>
+    <button class="x ow" title="今の状態で上書き">⟳</button>
+    <button class="x rn" title="名前を変える">✎</button>
+    <button class="x fl" title="これだけ作業ファイルに保存">⤓</button>
+    <button class="x dl" title="消す">×</button></div>`).join('');
+}
+$('snapSave').onclick = () => {
+  if (!S.loaded) { alert('先に路線データを読み込んでね'); return; }
+  const name = $('snapName').value.trim() || autoName();
+  snaps.unshift(captureState(name));
+  if (saveSnaps()) { $('snapName').value = ''; renderSnaps(); toast(`「${name}」をおぼえた`); }
+  else snaps.shift();
+};
+$('snapName').addEventListener('keydown', e => { if (e.key === 'Enter') $('snapSave').click(); });
+$('snapList').addEventListener('click', e => {
+  const it = e.target.closest('.snap'); if (!it) return;
+  const i = +it.dataset.i, s = snaps[i];
+  if (e.target.closest('.nm')) { applyState(s); return; }
+  if (e.target.classList.contains('ow')) {
+    if (!confirm(`「${s.name}」を今の状態で上書きする？`)) return;
+    snaps[i] = captureState(s.name); saveSnaps(); renderSnaps(); toast('上書きした');
+  }
+  if (e.target.classList.contains('rn')) {
+    const n = prompt('新しい名前', s.name);
+    if (n && n.trim()) { s.name = n.trim(); saveSnaps(); renderSnaps(); }
+  }
+  if (e.target.classList.contains('fl')) saveProject([s], s.name);
+  if (e.target.classList.contains('dl')) {
+    if (!confirm(`「${s.name}」を消す？`)) return;
+    snaps.splice(i, 1); saveSnaps(); renderSnaps();
+  }
+});
+function saveProject(list, base) {
+  const d = new Date();
+  const fn = (base || `廃線かさね地図_${d.getFullYear()}${pad2(d.getMonth() + 1)}${pad2(d.getDate())}`).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_');
+  const obj = { fmt: 'haisen-kasane-project', v: 1, saved: d.toISOString(), snaps: list };
+  download(new Blob([JSON.stringify(obj, null, 1)], { type: 'application/json' }), fn + '.haisen.json');
+}
+$('fileSave').onclick = () => {
+  if (snaps.length) saveProject(snaps);
+  else if (S.loaded) saveProject([captureState(autoName())]);
+  else alert('保存するものがまだない');
+};
+$('fileOpen').onclick = () => $('projFile').click();
+$('projFile').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f) return;
+  try {
+    const o = JSON.parse(await f.text());
+    if (o.fmt === 'haisen-rail-1') { alert('これは路線データ（rail_n05.json）。データのセットアップから入れてね。'); return; }
+    const list = o.fmt === 'haisen-kasane-project' ? o.snaps : (o.sel && o.cfg ? [o] : null);
+    if (!list || !list.length) { alert('作業ファイルじゃないみたい'); return; }
+    const names = new Set(snaps.map(s => s.name));
+    const add = list.map(s => {
+      let n = s.name || '名前なし', j = 2;
+      while (names.has(n)) n = `${s.name}（${j++}）`;
+      names.add(n);
+      return { ...s, name: n };
+    });
+    snaps = add.concat(snaps);
+    saveSnaps(); renderSnaps();
+    if (add.length === 1) applyState(add[0]);
+    else toast(`${add.length} 件読み込んだ。一覧から選んで呼び出してね`);
+  } catch (err) { alert('読み込めなかった：' + err.message); }
+};
+
+/* ---------- 書き出し ---------- */
+function loadImg(url) {
+  return new Promise(res => {
+    const im = new Image();
+    im.crossOrigin = 'anonymous';
+    const t = setTimeout(() => res(null), 15000);
+    im.onload = () => { clearTimeout(t); res(im); };
+    im.onerror = () => { clearTimeout(t); res(null); };
+    im.src = url;
+  });
+}
+async function drawTiles(ctx, b, V0, f, s, outW) {
+  let tz = Math.round(V0.z + Math.log2(s));
+  tz = Math.min(tz, b.max);
+  if (tz < b.min) { if (b.minNative) tz = b.min; else return; }
+  for (;;) {
+    const sc = Math.pow(2, tz - V0.z), fw = f.w * sc, fh = f.h * sc;
+    if ((fw / 256 + 2) * (fh / 256 + 2) <= 600 || tz <= b.min) break;
+    tz--;
+  }
+  const sc = Math.pow(2, tz - V0.z);
+  const fx0 = (V0.ox + f.x) * sc, fy0 = (V0.oy + f.y) * sc, fw = f.w * sc, fh = f.h * sc;
+  const r = outW / fw, n = Math.pow(2, tz);
+  const jobs = [];
+  for (let tx = Math.floor(fx0 / 256); tx <= Math.floor((fx0 + fw) / 256); tx++)
+    for (let ty = Math.floor(fy0 / 256); ty <= Math.floor((fy0 + fh) / 256); ty++) {
+      if (ty < 0 || ty >= n) continue;
+      const wx = ((tx % n) + n) % n;
+      const url = b.url.replace('{z}', tz).replace('{x}', wx).replace('{y}', ty);
+      jobs.push(loadImg(url).then(im => ({ im, tx, ty })));
+    }
+  const tiles = await Promise.all(jobs);
+  let miss = 0;
+  ctx.globalAlpha = cfg.baseOpacity;
+  for (const { im, tx, ty } of tiles) {
+    if (!im) { miss++; continue; }
+    const x = (tx * 256 - fx0) * r, y = (ty * 256 - fy0) * r;
+    ctx.drawImage(im, Math.floor(x), Math.floor(y), Math.ceil(256 * r) + 1, Math.ceil(256 * r) + 1);
+  }
+  ctx.globalAlpha = 1;
+  return miss;
+}
+$('exportBtn').onclick = async () => {
+  const btn = $('exportBtn');
+  btn.disabled = true; btn.textContent = '作成中…';
+  try {
+    await fontsReady();
+    const f = frameRect(), V0 = screenView();
+    const s = cfg.outW / f.w, outW = Math.round(cfg.outW), outH = Math.round(f.h * s);
+    const cv = document.createElement('canvas');
+    cv.width = outW; cv.height = outH;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, outW, outH);
+    const b = BASES[cfg.base];
+    if (b.under) await drawTiles(ctx, BASES.pale, V0, f, s, outW);
+    if (b.url) await drawTiles(ctx, b, V0, f, s, outW);
+    const ws = V0.ws, ox = V0.ox + f.x, oy = V0.oy + f.y;
+    const V = { k: s, P: (mx, my) => [(mx * ws - ox) * s, (my * ws - oy) * s], cull: [ox / ws, oy / ws, (ox + f.w) / ws, (oy + f.h) / ws] };
+    drawScene(ctx, V, { screen: false, frame: { x: 0, y: 0, w: outW, h: outH } });
+    const blob = await new Promise((res, rej) => { try { cv.toBlob(res, 'image/png'); } catch (e) { rej(e); } });
+    if (!blob) throw new Error('画像を作れなかった');
+    const d = new Date(), pad = n => String(n).padStart(2, '0');
+    const nm = (S.sel.filter(s => s.show).map(s => S.groups[s.gi].n).slice(0, 3).join('_') || 'map').replace(/[\\/:*?"<>|]/g, '');
+    download(blob, `${nm}_${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}.png`);
+  } catch (e) {
+    console.error(e);
+    alert('書き出しに失敗：' + e.message + (e.name === 'SecurityError' ? '\n（地図タイルの読み込み制限。ページをhttps/GitHub Pagesで開いて試してね）' : ''));
+  } finally { btn.disabled = false; btn.textContent = 'PNGで保存'; }
+};
+
+/* ---------- 起動 ---------- */
+buildStyleUI();
+bindCfg();
+setBase(); setOpacity();
+ensureFont(cfg.fontLabel); ensureFont(cfg.fontTitle);
+$('dExport').addEventListener('toggle', () => { placeFrame(); redraw(); });
+resizeOv(); renderSel(); renderSnaps(); renderHidden(); syncView();
+setMode(mode);
+autoLoad();
+</script>
+</body>
+</html>
